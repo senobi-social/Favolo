@@ -1,0 +1,85 @@
+<!-- 静的ファイルの使用-->
+{% load static %}
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>{{ title }}</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'favolo/css/style.css' %}" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.5/css/swiper.css">
+    </head>
+    <body>
+        <header>
+            <div class="header-left">
+                <div class="logo">
+                    <p>{{ title }}</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <nav class="global-nav">
+                    <ul class="global-nav__list">
+                      <li class="global-nav__item"><a href="">{{ username }}</a></li>
+                      <li class="global-nav__item"><a href="">{{ account }}</a></li>
+                      <li class="global-nav__item"><a href="">サインアップ</a></li>
+                      <li class="global-nav__item"><a href="">プライバシーポリシー</a></li>
+                      <li class="global-nav__item"><a href="">利用規約</a></li>
+                      <li class="global-nav__item"><a href="">ドキュメント</a></li>
+                    </ul>
+                </nav>
+                    <div class="hamburger" id="js-hamburger">
+                        <span class="hamburger__line hamburger__line--1"></span>
+                        <span class="hamburger__line hamburger__line--2"></span>
+                        <span class="hamburger__line hamburger__line--3"></span>
+                    </div>
+                    <div class="black-bg" id="js-black-bg"></div>
+            </div>
+        </header>
+        <div class="introduction">
+            <div class="introduction-left">
+                <h2>ホテル好きの僕が選ぶ最新おすすめホテル！！</h2>
+            </div>
+            <div class="introduction-right">
+            </div>   
+        </div>
+        <div class="archive">
+            {% for text, image, id in list %}
+            <!-- 一つ一つの投稿を表示　-->
+            <div class="article">
+                <!-- スライドの大枠　-->
+                <div class="hero">
+                    <!-- 画像のとき -->
+                    {% if id == 1 %}
+                    <!-- スライド部分開始　-->
+                    <div class="swiper-container">
+                        <!-- メイン表示部分　-->
+                        <div class="swiper-wrapper">
+                        <!-- 各スライド -->
+                        <!-- これは次回導入します↓　-->
+                        <!-- <img src="{{ url }}" alt=""> -->
+                        {% for url in image %}
+                            <div class="swiper-slide"><img src="{{ url }}" alt=""></div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                    <!-- 動画のとき -->
+                    {% elif id == 2 %}
+                    <video src="{{ image }}" width="100%" height="400px" loop autoplay muted></video>
+                    <!-- 画像も動画もないとき-->
+                    {% elif id == 3 %}
+                    <p>画像も動画もありません</p>
+                    {% endif %}
+                </div>
+                <br>
+                <p>{{ text }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        <br>
+        <!-- Swiper END -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.5/js/swiper.min.js"></script>
+        <script type="text/javascript" src="{% static 'favolo/js/slide.js' %}"></script>
+        <!-- JQuery -->
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    </body>
+</html>

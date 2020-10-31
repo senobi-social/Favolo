@@ -1,0 +1,314 @@
+/* ============================= */
+/* 作業メモ */
+/* 105行目の画像の縮尺をどうするか */
+/* できれば等倍にしたいが画像サイズが合わなくなってしまう */
+/* ============================= */ 
+
+body {
+    background: #FFFFFF; 
+    font-family: "Franklin Gothic Medium";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;      
+}
+
+
+h1 {
+    color: black;
+    font-size:40pt;
+    margin-top:20px;
+    margin-bottom:0px;
+    text-align:center;
+
+}
+
+p {
+    color: gray;
+    margin:10px;
+    text-align: center;
+}
+
+a {
+    color:blue;
+    text-decoration: none;
+}
+
+@import url(https://fonts.googleapis.com/css?family=Roboto:300);
+
+/* ヘッダー */
+/* ------------------------------------------------------- */
+header {
+  height: 65px;
+  width: 100%;
+  background-color: #ffffff;
+  position: fixed;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  width: 124px;
+  margin-top: 20px;
+}
+
+.header-left {
+  float: left;
+}
+
+.header-right {
+  float: right;
+  height: 65px;
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: all 0.5s;
+}
+
+.header-right:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.header-right a {
+  line-height: 65px;
+  padding: 0 25px;
+  color: white;
+  display: block;
+}
+
+.login-page {
+  width: 360px; /* 横幅 */
+  padding: 3% 0 0; /* 領域内のスペース　*/
+  margin: auto; /* 領域間のスペース　*/
+}
+
+.form {
+  position: relative;
+  z-index: 1;
+  background: #FFFFFF;
+  max-width: 360px;
+  margin: 0 auto 100px;
+  padding: 45px;
+  text-align: left;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+
+/* テキストエリア　*/
+.form input {
+  font-family: "Franklin Gothic Medium";
+  outline: 0;
+  background: #f2f2f2;
+  width: 100%;
+  border: 0;
+  margin: 0 0 20px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+/* ログインボタン */
+.form button {
+  font-family: "Franklin Gothic Medium",;
+  text-transform: uppercase;
+  outline: 0;
+  background: #4CAF50;
+  width: 100%;
+  border: 0;
+  padding: 15px;
+  color: #FFFFFF;
+  font-size: 14px;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+}
+
+.form button:hover,.form button:active,.form button:focus {
+  background: #43A047;
+}
+
+/* イントロダクション */
+/* ------------------------------------------------------- */
+.introduction {
+  display: block;
+  position: relative;
+  top: 80px;
+  background-color: #fff;
+  width: 100%;
+  height: 80px;
+}
+
+.introduction-left {
+  float: left;
+  margin-left: 60px;
+}
+
+.introduction-right {
+  float: right;
+}
+
+/* テーブル配置 */
+/* ------------------------------------------------------- */
+.archive {
+  display: flex; /* 記事を横並びにする */
+  flex-wrap: wrap;
+  justify-content: space-around;
+  position: relative;
+  top: 120px;
+}
+
+.article {
+  margin-bottom: 3rem;
+  padding: 3rem;
+  width: 35%;
+  background-color: #f0f0f0;
+  border-radius: 10px; /* 角丸にする */
+  box-shadow: 2px 2px 3px rgb(187, 187, 187); 
+}
+
+.archive img {
+  display: block; /*ブロック要素にすることで余白などが設定できる */
+  float: left;
+  margin: 0 auto; /* これで画像と大枠間の余白が消える */
+  width: 100%;
+  height: auto; /* ここが画像サイズを決める上で重要 */
+}
+
+.archive p {
+  /* floatを終了する */
+  clear: both;
+}
+
+/* スライドの大枠 */
+/* ------------------------------------------------------- */
+.hero {
+  display: block;
+  background-color: #f0f0f0;
+  width: 100%;
+}
+
+/* 以下スライドショー */
+/* ------------------------------------------------------ */
+/* 全体のスタイル */
+.swiper-wrapper {
+	width: 100%;
+	height: 400px; /* 画像の高さ調節（合わせる）*/
+}
+/* 全スライド共通スタイル */
+.swiper-slide {
+	color: #ffffff;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	line-height: 400px; /* 画像の高さ調節（合わせる） */
+}
+/* 4の倍数＋1枚目のスライドのスタイル（1枚目、5枚目…） */
+.swiper-slide:nth-child(4n+1) {
+	background-color: #EECB27;
+}
+/* 4の倍数＋2枚目のスライドのスタイル（2枚目、6枚目…） */
+.swiper-slide:nth-child(4n+2) {
+	background-color: #E13239;
+}
+/* 4の倍数＋3枚目のスライドのスタイル（3枚目、7枚目…） */
+.swiper-slide:nth-child(4n+3) {
+	background-color: #1F1762;
+}
+/* 4の倍数＋4枚目のスライドのスタイル（4枚目、8枚目…） */
+.swiper-slide:nth-child(4n+4) {
+	background-color: #BEDAE5;
+}
+
+@media screen and (max-width: 480px) {
+  .article {
+    width: 70%;
+    margin: 20px auto;
+}
+}
+
+/* ハンバーガーメニュー */
+.global-nav {
+  position: fixed;
+  right: -320px; /* これで隠れる */
+  top: 0;
+  width: 300px; /* スマホに収まるくらい */
+  height: 100vh;
+  padding-top: 40px;
+  background-color: #fff;
+  transition: all .6s;
+  z-index: 200;
+  overflow-y: auto; /* メニューが多くなったらスクロールできるように */
+}
+.hamburger {
+  position: absolute;
+  right: 30px;
+  top: 10px;
+  width: 40px; /* クリックしやすいようにちゃんと幅を指定する */
+  height: 40px; /* クリックしやすいようにちゃんと高さを指定する */
+  cursor: pointer;
+  z-index: 300;
+}
+.global-nav__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.global-nav__item {
+  text-align: center;
+  padding: 0 14px;
+}
+.global-nav__item a {
+  display: block;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  text-decoration: none;
+  color: #111;
+}
+.global-nav__item a:hover {
+  background-color: #eee;
+}
+.hamburger__line {
+  position: absolute;
+  left: 11px;
+  width: 18px;
+  height: 1px;
+  background-color: #111;
+  transition: all .6s;
+}
+.hamburger__line--1 {
+  top: 14px;
+}
+.hamburger__line--2 {
+  top: 20px;
+}
+.hamburger__line--3 {
+  top: 26px;
+}
+.black-bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  background-color: #000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all .6s;
+  cursor: pointer;
+}
+/* 表示された時用のCSS */
+.nav-open .global-nav {
+  right: 0;
+}
+.nav-open .black-bg {
+  opacity: .8;
+  visibility: visible;
+}
+.nav-open .hamburger__line--1 {
+  transform: rotate(45deg);
+  top: 20px;
+}
+.nav-open .hamburger__line--2 {
+  width: 0;
+  left: 50%;
+}
+.nav-open .hamburger__line--3 {
+  transform: rotate(-45deg);
+  top: 20px;
+}

@@ -1,0 +1,20 @@
+<!-- 静的ファイルの使用-->
+{% load static %}
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>{{ title }}</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'favolo/css/index.css' %}" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    </head>
+    <body>
+        <p>これはdatabase.htmlです</p>
+        {% for item in rows %}
+        {{ item }}
+        {% endfor %}
+        {% for i in row %}
+        {{ i }}
+        {% endfor %}
+    </body>
+</html>

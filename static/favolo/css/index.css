@@ -1,0 +1,14 @@
+
+.box {
+  position: relative;
+  top: 120px;
+  z-index: 1;
+  background: #ffffff;
+  max-width: 360px;
+  margin: 0 auto 100px;
+  padding: 45px;
+  text-align: left;
+  border-radius: 10px;
+  border: solid;
+  border-color: #f0f0f0;
+}

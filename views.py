@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.generic import TemplateView
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from .forms import FavoloForm
 from .forms import SignUpForm
-from .forms import UserForm
+from .forms import LoginForm
 
 # TwitterAPIの仕様に関するimport
 import json
@@ -29,35 +31,20 @@ class FavoloView(TemplateView):
     def get(self, request):
         return render(request, 'favolo/index.html', self.params)
 
-
+# サインイン機能
 # signup.htmlで使用
-# redirectは転送先URLを指定する
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('favolo:profile')
-    else:
-        form = SignUpForm()
-
-    context = {'form':form}
-    return render(request, 'favolo/signup.html', context)
-
-# profile.htmlで使用
-# signup.htmlの情報を確認する
-# ユーザーの基本情報を入力させる
-def profile(request):
-    email = request.POST.get('email')
-
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        if form.is_valid():
-            # form.save()
+            save = form.save()
+            username = save[0]
+            account = save[1]
+            password = save[2]
+            email = request.POST.get('email')
 
             # パスワードのハッシュ化
-            s = 'seisei'
-            encoded_pass = s.encode()
+            encoded_pass = password.encode()
             hash_pass = hashlib.sha256(encoded_pass).hexdigest()
 
             # データベースへの接続
@@ -72,73 +59,83 @@ def profile(request):
             # カーソルの取得
             cursor = connection.cursor()
 
-            username = request.POST.get('username')
-            account = request.POST.get('account')
-            password = request.POST.get('password')
-
+            # もしかしたらプレースホルダーを使わなきゃかも?
             # クエリのセット
-            sql = "INSERT INTO favolo_members (user_id ,name ,mail ,password ,account) \
-                values(UUID_TO_BIN(UUID()) ,username ,email ,hash_pass ,account);"
-
+            sql = "INSERT INTO favolo_members (user_id, name, mail, password, account) \
+                values(UUID_TO_BIN(UUID()), %s, %s, %s, %s);"
+        
             # クエリの実行
-            cursor.execute(sql)
+            cursor.execute(sql, (username, email, hash_pass, account))
         
             # 接続を終了する
             cursor.close()
-            connection.close()
+            connection.commit()
+            connection.close()            
 
-            return redirect('favolo:form')
-        
+            # セッションでユーザー情報を保存
+            request.session['username'] = username
+            request.session['account'] = account
+            request.session['email'] = email
+            return redirect('favolo:profile')
     else:
-        form = UserForm()
+        form = SignUpForm()
+
+    params = {
+        'form':form,
+        }
+    return render(request, 'favolo/signup.html', params)
+
+# サインインの確認機能
+# profile.htmlで使用
+def profile(request):
+    # セッションからユーザー情報を取得
+    username = request.session.get('username')
+    account = request.session.get('account')
+    email = request.session.get('email')
             
     params = {
         'title': '確認ページ',
-        'form': UserForm(),
+        'username': username,
+        'account': account,
         'email': email,
     }
     return render(request, 'favolo/profile.html', params)
 
-
-# database.html　で使用
-def database(request):
-
-    # データベースへの接続
-    connection = MySQLdb.connect(
-    host='localhost',
-    user='bluesky',
-    passwd='bluesky',
-    db='favolo_db',
-    charset="utf8"
-    )
-
-    # カーソルの取得
-    cursor = connection.cursor()
-
-    # クエリの実行
-    sql = "select * from favolo_pages"
-    cursor.execute(sql)
-
-    # 実行結果を取得する
-    rows = cursor.fetchall()
-
-    # 接続を終了する
-    cursor.close()
-    connection.close()
+# ログイン機能
+# login.htmlで使用
+def account_login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = request.POST.get('email')
+            password = request.POST.get('password')
+            user = authenticate(request, username=email, password=password)
+            if user is not None:
+                login(request, user)
+                # ログイン成功ページへリダイレクト
+                return redirect('favolo:result')
+            else:
+                # ログイン失敗時の処理
+                return 'メールアドレスまたはパスワードが違います' 
+    else:
+        form = LoginForm()
 
     params = {
-        'title': 'Favolo',
-        'rows': rows,
+        'title': 'ログインページ',
+        'form':form,
     }
-    return render(request, 'favolo/database.html', params)
+    return render(request, 'favolo/login.html', params)
+
+
 
 # result.html で使用
-# mainクラス
 # 結果を表示するメソッド
+@login_required
 def result(request):
-    # リクエストパラメータを取得
-    username = request.POST['username']
-    account = request.POST['account']
+
+    # セッションからユーザー情報を取得
+    username = request.session.get('username')
+    account = request.session.get('account')
 
     # TwitterのAPI仕様部分
     CONSUMER_KEY = 'erBtan8n2XL6epdGj0FGBuC48'
@@ -185,7 +182,6 @@ def result(request):
 
     params = {
         'title': 'Favolo',
-        'message': 'Name:' + username + '<br>ID:' + account,
         'username': username,
         'account': account,
         'textList': textList,
@@ -200,7 +196,7 @@ def result(request):
 # 返り値：resとjson
 def get_fav_list(request, twitter):
     url = 'https://api.twitter.com/1.1/favorites/list.json?tweet_mode=extended'
-    name = request.POST['account']
+    name = request.session.get('account')
     params = {'screen_name': name, 'count': 15}
     res = twitter.get(url, params = params)
 

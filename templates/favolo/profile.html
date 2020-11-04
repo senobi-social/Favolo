@@ -9,12 +9,11 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
     </head>
     <body>
-        <p>ご登録ありがとうございます</p>
-        <p>{{ email }}</p>
-        <form action="{% url 'favolo:profile' %}" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Start">
-        </form>
+        <h1>アカウント確認</h1>
+        <h2>{{ email }}宛に確認メールを送りました</h2>
+        <p>※現在実装できていません</p>
+        <p>お名前：{{ username }}</p>
+        <p>Twitter：{{ account }}</p>
+        <a href="{% url 'favolo:result' %}">さっそく使ってみる！</a>
     </body>
 </html>

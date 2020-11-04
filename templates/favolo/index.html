@@ -12,7 +12,7 @@
       <div class="box">
         <!-- 送り先のURLを指定する-->
         <!-- {{ form }} -->
-        <form action="{% url 'favolo:form' %}" method="post">
+        <form action="{% url 'favolo:result' %}" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <input class="btn btn-primary my-2" type="submit" value="LOGIN">

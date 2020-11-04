@@ -9,10 +9,13 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
     </head>
     <body>
-        <h1>Please Login to Polls App.</h1>
+        <h1>ログインページ</h1>
         <form action="{% url 'favolo:login' %}" method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            <label>メールアドレス</label>
+            {{ form.email }}
+            <label>パスワード</label>
+            {{ form.password }}
             <input type="submit" value="Login">
         </form>
     </body>

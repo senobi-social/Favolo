@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.generic import TemplateView
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .forms import FavoloForm
 from .forms import SignUpForm
@@ -17,6 +17,9 @@ import MySQLdb
 
 # パスワードのハッシュ化に関するimport
 import hashlib
+
+# アクセスキー生成に関するインポート
+import random, string
 
 # index.html　で使用
 # mainクラス
@@ -47,6 +50,9 @@ def signup(request):
             encoded_pass = password.encode()
             hash_pass = hashlib.sha256(encoded_pass).hexdigest()
 
+            # アクセスキーの取得
+            accesskey = Create_Accesskey(request)
+
             # データベースへの接続
             connection = MySQLdb.connect(
                 host='localhost',
@@ -59,13 +65,23 @@ def signup(request):
             # カーソルの取得
             cursor = connection.cursor()
 
-            # もしかしたらプレースホルダーを使わなきゃかも?
             # クエリのセット
-            sql = "INSERT INTO favolo_members (user_id, name, mail, password, account) \
+            sql_members_insert = "INSERT INTO favolo_members (user_id, name, mail, password, account) \
                 values(UUID_TO_BIN(UUID()), %s, %s, %s, %s);"
-        
+
+            sql_members_select = "SELECT BIN_TO_UUID(user_id) FROM favolo_members where mail=%s;"
+
+            sql_pages_insert = "INSERT INTO favolo_pages (page_id ,user_id ,accesskey ,design ,title ,comment) \
+                values(UUID_TO_BIN(UUID()), UUID_TO_BIN(%s), %s, 1, 'Favoにタイトルをつけてみよう！', 'コメントで紹介しよう！');"
+	
             # クエリの実行
-            cursor.execute(sql, (username, email, hash_pass, account))
+            cursor.execute(sql_members_insert, (username, email, hash_pass, account))
+            cursor.execute(sql_members_select, (email,))
+
+            row = cursor.fetchone()
+            user_id = row[0]
+
+            cursor.execute(sql_pages_insert, (user_id, accesskey, ))
         
             # 接続を終了する
             cursor.close()
@@ -84,6 +100,20 @@ def signup(request):
         'form':form,
         }
     return render(request, 'favolo/signup.html', params)
+
+# アクセスキーを作成する昨日
+# signup.htmlで使用する
+def Create_Accesskey(request):
+    Alpha1 = ''.join(random.choices(string.ascii_letters, k=4))
+    Alpha2 = ''.join(random.choices(string.ascii_letters, k=4))
+    Nume1 = ''.join(random.choices(string.digits, k=4))
+    Nume2 = ''.join(random.choices(string.digits, k=4))
+
+    version = '1.0'
+    removed = version.replace(".", "")
+
+    accesskey = removed + Alpha1 + Nume1 + Alpha2 + Nume2
+    return accesskey
 
 # サインインの確認機能
 # profile.htmlで使用
@@ -111,7 +141,57 @@ def account_login(request):
             password = request.POST.get('password')
             user = authenticate(request, username=email, password=password)
             if user is not None:
-                login(request, user)
+
+                # favolo_membersからユーザー情報を取得する
+                # データベースへの接続
+                connection = MySQLdb.connect(
+                host='localhost',
+                user='bluesky',
+                passwd='bluesky',
+                db='favolo_db',
+                charset="utf8"
+                )
+                
+                # カーソルの取得
+                cursor = connection.cursor()  
+
+                # クエリのセット
+                sql_members_select = "SELECT BIN_TO_UUID(user_id), name, account FROM favolo_members where mail=%s;"
+
+                sql_pages_select = "SELECT title, comment FROM favolo_pages where user_id=UUID_TO_BIN(%s);"
+    
+                # クエリの実行
+                cursor.execute(sql_members_select, (email,))
+
+                # ユーザー情報の取得
+                row_members = cursor.fetchone()
+                user_id = row_members[0]
+                username = row_members[1]
+                account = row_members[2]
+
+                cursor.execute(sql_pages_select, (user_id,))
+
+                # ページ情報の取得
+                row_pages = cursor.fetchone()
+                page_title = row_pages[0]
+                page_comment = row_pages[1]
+
+                # ユーザー情報をセッションに保存
+                request.session['username'] = username
+                request.session['account'] = account
+
+                # ページ情報をセッションに保存
+                request.session['page_title'] = page_title
+                request.session['page_comment'] = page_comment
+      
+                # 接続を終了する
+                cursor.close()
+                connection.commit()
+                connection.close()
+
+                # ログインする
+                login(request, user)                      
+
                 # ログイン成功ページへリダイレクト
                 return redirect('favolo:result')
             else:
@@ -126,6 +206,12 @@ def account_login(request):
     }
     return render(request, 'favolo/login.html', params)
 
+# ログアウト機能
+# logout.htmlで使用
+def account_logout(request):
+    logout(request)
+    return redirect('favolo:login')
+
 
 
 # result.html で使用
@@ -136,6 +222,10 @@ def result(request):
     # セッションからユーザー情報を取得
     username = request.session.get('username')
     account = request.session.get('account')
+
+    # セッションからページ情報を取得
+    page_title = request.session.get('page_title')
+    page_comment = request.session.get('page_comment')
 
     # TwitterのAPI仕様部分
     CONSUMER_KEY = 'erBtan8n2XL6epdGj0FGBuC48'
@@ -182,6 +272,8 @@ def result(request):
 
     params = {
         'title': 'Favolo',
+        'page_title': page_title,
+        'page_comment': page_comment,
         'username': username,
         'account': account,
         'textList': textList,

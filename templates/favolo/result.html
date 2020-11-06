@@ -24,6 +24,7 @@
                       <li class="global-nav__item"><a href="">プライバシーポリシー</a></li>
                       <li class="global-nav__item"><a href="">利用規約</a></li>
                       <li class="global-nav__item"><a href="">ドキュメント</a></li>
+                      <li class="global-nav__item"><a href="{% url 'favolo:logout' %}">ログアウト</a></li>
                     </ul>
                 </nav>
                     <div class="hamburger" id="js-hamburger">
@@ -36,9 +37,10 @@
         </header>
         <div class="introduction">
             <div class="introduction-left">
-                <h2>ホテル好きの僕が選ぶ最新おすすめホテル！！</h2>
+                <h2>{{ page_title }}</h2>
             </div>
             <div class="introduction-right">
+                <h3>{{ page_comment }}</h3>
             </div>   
         </div>
         <div class="archive">

@@ -6,6 +6,10 @@ from django.contrib.auth.decorators import login_required
 from .forms import FavoloForm
 from .forms import SignUpForm
 from .forms import LoginForm
+from .forms import SettingsUsernameForm
+from .forms import SettingsPasswordForm
+from .forms import SettingsDesignForm
+from .forms import SettingsIntroductionForm
 
 # TwitterAPIの仕様に関するimport
 import json
@@ -179,6 +183,7 @@ def account_login(request):
                 # ユーザー情報をセッションに保存
                 request.session['username'] = username
                 request.session['account'] = account
+                request.session['email'] = email
 
                 # ページ情報をセッションに保存
                 request.session['page_title'] = page_title
@@ -211,7 +216,6 @@ def account_login(request):
 def account_logout(request):
     logout(request)
     return redirect('favolo:login')
-
 
 
 # result.html で使用
@@ -368,4 +372,236 @@ def get_text(res, load, num):
     first = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-…]+', "" ,text)
     second = re.sub(r'#.*', "" ,first)
     return second 
+
+
+
+# settingsの設定ページ
+@login_required
+def settings(request):
+
+    params = {
+        'title': '設定画面',
+    }
+    return render(request, 'favolo/settings.html', params)
+
+
+# usernameの変更機能
+# settings/username.htmlで使用
+@login_required
+def settings_username(request):
+    email = request.session.get('email')
+    if request.method == 'POST':
+        form = SettingsUsernameForm(request.POST)
+        if form.is_valid():
+            new_username = request.POST.get('new_username')
+
+            # favolo_membersからユーザー情報を取得する
+            # データベースへの接続
+            connection = MySQLdb.connect(
+            host='localhost',
+            user='bluesky',
+            passwd='bluesky',
+            db='favolo_db',
+            charset="utf8"
+            )
+                
+            # カーソルの取得
+            cursor = connection.cursor()  
+
+            # クエリのセット
+            sql_members_update = "UPDATE favolo_members SET name=%s where mail=%s;"
+    
+            # クエリの実行
+            cursor.execute(sql_members_update, (new_username, email,))
+
+            # 接続を終了する
+            cursor.close()
+            connection.commit()
+            connection.close()
+
+            # ユーザー情報の更新
+            request.session['username'] = new_username
+
+            return redirect('favolo:result')   
+    else:
+        form = SettingsUsernameForm()
+
+    params = {
+        'title': 'ユーザーネームの変更',
+        'form': form,
+        'email': email,
+    }
+    return render(request, 'favolo/settings/username.html', params)
+
+
+# passwordの変更機能
+# settings/password.htmlで使用
+@login_required
+def settings_password(request):
+    if request.method == 'POST':
+        form = SettingsPasswordForm(request.POST)
+        if form.is_valid():
+            save = form.save()
+            new_password = save[0]
+            email = save[1]
+
+            # パスワードのハッシュ化
+            encoded_pass = new_password.encode()
+            hash_pass = hashlib.sha256(encoded_pass).hexdigest()
+
+            # favolo_membersからユーザー情報を取得する
+            # データベースへの接続
+            connection = MySQLdb.connect(
+            host='localhost',
+            user='bluesky',
+            passwd='bluesky',
+            db='favolo_db',
+            charset="utf8"
+            )
+                
+            # カーソルの取得
+            cursor = connection.cursor()  
+
+            # クエリのセット
+            sql_members_update = "UPDATE favolo_members SET password=%s where mail=%s"
+    
+            # クエリの実行
+            cursor.execute(sql_members_update, (hash_pass, email,))
+
+            # 接続を終了する
+            cursor.close()
+            connection.commit()
+            connection.close()
+
+            return redirect('favolo:result')
+    else:
+        form = SettingsPasswordForm()
+
+    params = {
+        'title': 'パスワードの変更',
+        'form': form,
+    }
+    return render(request, 'favolo/settings/password.html', params)
+
+
+# designの変更機能
+# settings/design.htmlで使用
+@login_required
+def settings_design(request):
+    if request.method == 'POST':
+        form = SettingsDesignForm(request.POST)
+        if form.is_valid():
+            new_design = request.POST.get('new_design')
+            email = request.session.get('email')
+
+            # favolo_membersからユーザー情報を取得する
+            # データベースへの接続
+            connection = MySQLdb.connect(
+            host='localhost',
+            user='bluesky',
+            passwd='bluesky',
+            db='favolo_db',
+            charset="utf8"
+            )
+                
+            # カーソルの取得
+            cursor = connection.cursor()  
+
+            # クエリのセット
+            sql_members_select = "SELECT BIN_TO_UUID(user_id) FROM favolo_members where mail=%s;"
+
+            sql_pages_update = "UPDATE favolo_pages SET design=%s where user_id=UUID_TO_BIN(%s);"
+    
+            # クエリの実行
+            cursor.execute(sql_members_select, (email,))
+
+            # ユーザーIDの取得
+            row_members = cursor.fetchone()
+            user_id = row_members[0]
+
+            cursor.execute(sql_pages_update, (new_design, user_id,))
+
+            # 接続を終了する
+            cursor.close()
+            connection.commit()
+            connection.close()
+
+            # ページ情報の更新
+            request.session['page_design'] = new_design
+
+            return redirect('favolo:result')
+    else:
+        form = SettingsDesignForm()
+
+    params = {
+        'title': 'デザインの変更',
+        'form': form,
+    }
+    return render(request, 'favolo/settings/design.html', params)
+
+
+# title, commentの変更機能
+# settings/introduction.htmlで使用
+@login_required
+def settings_introduction(request):
+    if request.method == 'POST':
+        form = SettingsIntroductionForm(request.POST)
+        if form.is_valid():
+            new_title = request.POST.get('new_title')
+            new_comment = request.POST.get('new_comment')
+            email = request.session.get('email')
+
+            # favolo_membersからユーザー情報を取得する
+            # データベースへの接続
+            connection = MySQLdb.connect(
+            host='localhost',
+            user='bluesky',
+            passwd='bluesky',
+            db='favolo_db',
+            charset="utf8"
+            )
+                
+            # カーソルの取得
+            cursor = connection.cursor()  
+
+            # クエリのセット
+            sql_members_select = "SELECT BIN_TO_UUID(user_id) FROM favolo_members where mail=%s;"
+
+            sql_pages_update = "UPDATE favolo_pages SET title=%s, comment=%s where user_id=UUID_TO_BIN(%s);"
+    
+            # クエリの実行
+            cursor.execute(sql_members_select, (email,))
+
+            # ユーザーIDの取得
+            row_members = cursor.fetchone()
+            user_id = row_members[0]
+
+            cursor.execute(sql_pages_update, (new_title, new_comment, user_id,))
+
+            # 接続を終了する
+            cursor.close()
+            connection.commit()
+            connection.close()
+
+            # ページ情報をセッションに保存
+            request.session['page_title'] = new_title
+            request.session['page_comment'] = new_comment
+
+            return redirect('favolo:result')
+    else:
+        # セッションからページ情報を取得
+        page_title = request.session.get('page_title')
+        page_comment = request.session.get('page_comment')
+
+        # フォームに初期値をつける
+        initial_dict = dict(new_title=page_title, new_comment=page_comment)
+        form = SettingsIntroductionForm(initial = initial_dict)
+
+    params = {
+        'title': 'タイトル/コメントの変更',
+        'form': form,
+    }
+    return render(request, 'favolo/settings/introduction.html', params)
+
+
 

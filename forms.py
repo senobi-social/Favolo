@@ -64,3 +64,61 @@ class LoginForm(forms.Form):
         password = self.cleaned_data.get('password')
         return password
 
+class SettingsUsernameForm(forms.Form):
+    new_username = forms.CharField(label='new_username', widget=forms.TextInput)
+
+    def clean_new_username(self):
+        new_username = self.cleaned_data.get('new_username')
+        return new_username
+
+class SettingsPasswordForm(forms.Form):
+    email = forms.CharField(label='email', widget=forms.TextInput)
+    new_password = forms.CharField(label='new_password', widget=forms.PasswordInput)
+    retype_password = forms.CharField(widget=forms.PasswordInput)  
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        return email
+
+    def clean_new_password(self):
+        new_password = self.cleaned_data.get('new_password')
+        if len(new_password) < 5:
+            raise forms.ValidationError('New Password must contain 5 or more characters.')
+        return new_password
+
+    def clean(self):
+        super(SettingsPasswordForm, self).clean() #python2系の書き方らしいので注意
+        new_password = self.cleaned_data.get('new_password')
+        retyped = self.cleaned_data.get('retype_password')
+        if new_password and retyped and (new_password != retyped):
+            self.add_error('retype_password', 'This does not match with the above.') 
+
+    def save(self):
+        email = self.cleaned_data.get('email')
+        new_password = self.cleaned_data.get('new_password')
+        exist_user = User.objects.get(username = email)
+        exist_user.set_password(new_password)
+        exist_user.save()
+        return new_password, email
+
+
+class SettingsDesignForm(forms.Form):
+    new_design = forms.IntegerField(label='new_design', widget=forms.NumberInput)
+
+    def clean_new_design(self):
+        new_design = self.cleaned_data.get('new_design')
+        return new_design
+
+class SettingsIntroductionForm(forms.Form):
+    new_title = forms.CharField(label='new_title', widget=forms.TextInput)
+    new_comment = forms.CharField(label='new_comment', widget=forms.TextInput)
+
+    def clean_new_title(self):
+        new_title = self.cleaned_data.get('new_title')
+        return new_title
+
+    def clean_new_comment(self):
+        new_comment = self.cleaned_data.get('new_comment')
+        return new_comment
+
+

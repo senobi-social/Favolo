@@ -1,0 +1,18 @@
+<!-- 静的ファイルの使用-->
+{% load static %}
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>{{ title }}</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'favolo/css/index.css' %}" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    </head>
+    <body>
+        <h1>Favolo一覧</h1>
+        <p><a href="{% url 'favolo:accesskey' '10trrD7156Gjdp5340' %}">ryutaのページ</a></p>
+        <p><a href="{% url 'favolo:accesskey' '10aefv8927buid2469' %}">soraのページ</a></p>
+        <p><a href="{% url 'favolo:accesskey' '10lOAy9729ryQC0586' %}">tamaeのページ</a></p>
+        <p><a href="{% url 'favolo:accesskey' '10oGQX4017aKeT4457' %}">misatoのページ</a></p>
+    </body>
+</html>

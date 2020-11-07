@@ -252,7 +252,7 @@ def result(request):
 
     # 繰り返し部分はmainメソッドでする
     # それ以外の取得処理は他メソッドでする
-    for num in range(10):
+    for num in range(16):
         load = loads[num]
         # テキスト取得部分
         text = get_text(res, load, num)
@@ -278,6 +278,7 @@ def result(request):
         'title': 'Favolo',
         'page_title': page_title,
         'page_comment': page_comment,
+        'page_name': username,
         'username': username,
         'account': account,
         'textList': textList,
@@ -293,7 +294,7 @@ def result(request):
 def get_fav_list(request, twitter):
     url = 'https://api.twitter.com/1.1/favorites/list.json?tweet_mode=extended'
     name = request.session.get('account')
-    params = {'screen_name': name, 'count': 15}
+    params = {'screen_name': name, 'count': 16}
     res = twitter.get(url, params = params)
 
     if res.status_code == 200:
@@ -602,6 +603,138 @@ def settings_introduction(request):
         'form': form,
     }
     return render(request, 'favolo/settings/introduction.html', params)
+
+@login_required
+def pages(request, accesskey):
+
+    # セッションからユーザー情報を取得
+    username = request.session.get('username')
+    account = request.session.get('account')
+
+    # データベースへの接続
+    connection = MySQLdb.connect(
+    host='localhost',
+    user='bluesky',
+    passwd='bluesky',
+    db='favolo_db',
+    charset="utf8"
+    )   
+    
+    # カーソルの取得
+    cursor = connection.cursor()
+
+    # クエリのセット
+    sql_pages_select = "SELECT BIN_TO_UUID(user_id), design, title, comment FROM favolo_pages where accesskey=%s;"
+
+    sql_members_select = "SELECT name, account FROM favolo_members where user_id=UUID_TO_BIN(%s);"
+
+    # クエリの実行
+    cursor.execute(sql_pages_select, (accesskey,))
+
+    # ページ情報の取得
+    row_pages = cursor.fetchone()
+    user_id = row_pages[0]
+    design = row_pages[1]
+    title = row_pages[2]
+    comment = row_pages[3]
+
+    cursor.execute(sql_members_select, (user_id, ))
+
+    # ユーザー情報の取得
+    row_members = cursor.fetchone()
+    name = row_members[0]
+    page_account = row_members[1]
+
+    # 接続を終了する
+    cursor.close()
+    connection.commit()
+    connection.close()
+
+
+    # TwitterのAPI仕様部分
+    CONSUMER_KEY = 'erBtan8n2XL6epdGj0FGBuC48'
+    CONSUMER_SECRET = 'jakIESg0xMvMkI3xZkEf4zxXBd1HlMcCRTZu3SuEj7bNAXbTrQ'
+    ACCESS_TOKEN = '1224321904216956930-7cTpzTD85LGNc0MR1CAzWRPMQDITlR'
+    ACCESS_TOKEN_SECRET = 'MqmvP7KjhR77aNhhvBZrtrLfHVZjSwFaRJz4dvnOuL72y'
+    twitter = OAuth1Session(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+
+    # 複数の返り値はタプルとして返される
+    # res = twitter.get(url, params= params)
+    # loads = json.loads(res.text)
+    result = get_other_fav_list(request, twitter, page_account)
+    res = result[0]
+    loads = result[1]
+
+    # リターン用のリストを用意
+    textList = []
+    imageList = []
+    idList = []
+
+    # 繰り返し部分はmainメソッドでする
+    # それ以外の取得処理は他メソッドでする
+    for num in range(16):
+        load = loads[num]
+        # テキスト取得部分
+        text = get_text(res, load, num)
+        # テキストのリスト
+        textList.append(text)
+
+        # 画像or動画取得部分
+        # 画像１つの場合-１つだけのURL
+        # 画像複数の場合-URLのリスト
+        # 動画１つの場合-１つだけのURL
+        types = photo_or_video(res, load, num)
+        type = types[0]
+        id = types[1]
+
+        # イメージリストに格納
+        imageList.append(type) 
+        idList.append(id)
+            
+    # zip関数でまとめる
+    List = zip(textList, imageList, idList)
+
+    # 注意
+    # サイドバーに表示させるusernameと
+    # ページ所有者のnameは別物
+    params = {
+        'title': 'Favolo',
+        'username': username,
+        'account': account,
+        'page_name': name,
+        'page_account': page_account,
+        'page_design': design,
+        'page_title': title,
+        'page_comment': comment,
+        'textList': textList,
+        'imageList': imageList,
+        'idList': idList,
+        'list': List,
+    }
+    return render(request, 'favolo/result.html', params)
+
+# get_fav_list()
+# ユーザー名からいいねリストを取得
+# 返り値：resとjson
+def get_other_fav_list(request, twitter, account):
+    url = 'https://api.twitter.com/1.1/favorites/list.json?tweet_mode=extended'
+    params = {'screen_name': account, 'count': 16}
+    res = twitter.get(url, params = params)
+
+    if res.status_code == 200:
+        load = json.loads(res.text)
+        return res, load
+    
+    return res, false
+
+# settingsの設定ページ
+@login_required
+def articles(request):
+
+    params = {
+        'title': '全てのFavolo一覧',
+    }
+    return render(request, 'favolo/all.html', params)
 
 
 

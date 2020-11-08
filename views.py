@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.http.response import JsonResponse
 from django.views.generic import TemplateView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -226,10 +227,56 @@ def result(request):
     # セッションからユーザー情報を取得
     username = request.session.get('username')
     account = request.session.get('account')
+    email = request.session.get('email')
 
     # セッションからページ情報を取得
     page_title = request.session.get('page_title')
     page_comment = request.session.get('page_comment')
+
+        # データベースへの接続
+    connection = MySQLdb.connect(
+    host='localhost',
+    user='bluesky',
+    passwd='bluesky',
+    db='favolo_db',
+    charset="utf8"
+    )   
+    
+    # カーソルの取得
+    cursor = connection.cursor()
+
+    # クエリのセット
+
+    sql_members_select = "SELECT BIN_TO_UUID(user_id) FROM favolo_members where mail=%s;"
+
+    sql_pages_select = "SELECT BIN_TO_UUID(page_id), accesskey FROM favolo_pages where user_id =UUID_TO_BIN(%s);"
+
+    sql_buzz_select = "SELECT likes FROM favolo_buzz where page_id=UUID_TO_BIN(%s);"  
+
+    # クエリの実行
+    cursor.execute(sql_members_select, (email, ))
+
+    # ユーザー情報の取得
+    row_members = cursor.fetchone()
+    user_id = row_members[0]
+
+    cursor.execute(sql_pages_select, (user_id,))
+
+    # ページ情報の取得
+    row_pages = cursor.fetchone()
+    page_id = row_pages[0]
+    accesskey = row_pages[1]
+
+    cursor.execute(sql_buzz_select, (page_id, ))
+
+    # いいね情報の取得
+    row_buzz = cursor.fetchone()
+    likes = row_buzz[0]
+
+    # 接続を終了する
+    cursor.close()
+    connection.commit()
+    connection.close()
 
     # TwitterのAPI仕様部分
     CONSUMER_KEY = 'erBtan8n2XL6epdGj0FGBuC48'
@@ -276,9 +323,11 @@ def result(request):
 
     params = {
         'title': 'Favolo',
+        'page_accesskey': accesskey,
         'page_title': page_title,
         'page_comment': page_comment,
         'page_name': username,
+        'page_likes': likes,
         'username': username,
         'account': account,
         'textList': textList,
@@ -624,9 +673,11 @@ def pages(request, accesskey):
     cursor = connection.cursor()
 
     # クエリのセット
-    sql_pages_select = "SELECT BIN_TO_UUID(user_id), design, title, comment FROM favolo_pages where accesskey=%s;"
+    sql_pages_select = "SELECT BIN_TO_UUID(user_id), BIN_TO_UUID(page_id), design, title, comment FROM favolo_pages where accesskey=%s;"
 
     sql_members_select = "SELECT name, account FROM favolo_members where user_id=UUID_TO_BIN(%s);"
+
+    sql_buzz_select = "SELECT likes FROM favolo_buzz where page_id=UUID_TO_BIN(%s);"
 
     # クエリの実行
     cursor.execute(sql_pages_select, (accesskey,))
@@ -634,9 +685,10 @@ def pages(request, accesskey):
     # ページ情報の取得
     row_pages = cursor.fetchone()
     user_id = row_pages[0]
-    design = row_pages[1]
-    title = row_pages[2]
-    comment = row_pages[3]
+    page_id = row_pages[1]
+    design = row_pages[2]
+    title = row_pages[3]
+    comment = row_pages[4]
 
     cursor.execute(sql_members_select, (user_id, ))
 
@@ -644,6 +696,12 @@ def pages(request, accesskey):
     row_members = cursor.fetchone()
     name = row_members[0]
     page_account = row_members[1]
+
+    cursor.execute(sql_buzz_select, (page_id, ))
+
+    # いいね情報の取得
+    row_buzz = cursor.fetchone()
+    likes = row_buzz[0]
 
     # 接続を終了する
     cursor.close()
@@ -701,11 +759,13 @@ def pages(request, accesskey):
         'title': 'Favolo',
         'username': username,
         'account': account,
+        'page_accesskey': accesskey,
         'page_name': name,
         'page_account': page_account,
         'page_design': design,
         'page_title': title,
         'page_comment': comment,
+        'page_likes': likes,
         'textList': textList,
         'imageList': imageList,
         'idList': idList,
@@ -729,12 +789,124 @@ def get_other_fav_list(request, twitter, account):
 
 # settingsの設定ページ
 @login_required
-def articles(request):
+def all_pages(request):
 
     params = {
         'title': '全てのFavolo一覧',
     }
     return render(request, 'favolo/all.html', params)
 
+@login_required
+def likes(request, accesskey):
+
+    # セッションからユーザー情報を取得
+    username = request.session.get('username')
+    email = request.session.get('email')
+
+    # データベースへの接続
+    connection = MySQLdb.connect(
+    host='localhost',
+    user='bluesky',
+    passwd='bluesky',
+    db='favolo_db',
+    charset="utf8"
+    )   
+    
+    # カーソルの取得
+    cursor = connection.cursor()
+
+    # クエリのセット
+    sql_pages_select = "SELECT BIN_TO_UUID(page_id) FROM favolo_pages where accesskey=%s;"
+
+    sql_members_select = "SELECT BIN_TO_UUID(user_id) FROM favolo_members where mail=%s;"
+
+    sql_buzz_update = "UPDATE favolo_buzz SET likes = likes + 1 where page_id=UUID_TO_BIN(%s);"  
+
+    sql_likes_insert = "INSERT into favolo_likes (user_id, page_id) values(UUID_TO_BIN(%s), UUID_TO_BIN(%s));"
+
+
+    # クエリの実行
+    cursor.execute(sql_pages_select, (accesskey, ))
+
+    # ページ情報の取得
+    row_pages = cursor.fetchone()
+    page_id = row_pages[0]
+
+    cursor.execute(sql_members_select, (email,))
+
+    # ユーザー情報の取得
+    row_members = cursor.fetchone()
+    user_id = row_members[0]
+
+    cursor.execute(sql_buzz_update, (page_id, ))
+
+    cursor.execute(sql_likes_insert, (user_id, page_id))
+
+    # 接続を終了する
+    cursor.close()
+    connection.commit()
+    connection.close() 
+
+    return redirect('favolo:accesskey', accesskey)
+
+@login_required
+def api_likes(request, accesskey):
+
+    # セッションからユーザー情報を取得
+    username = request.session.get('username')
+    email = request.session.get('email')
+
+    # データベースへの接続
+    connection = MySQLdb.connect(
+    host='localhost',
+    user='bluesky',
+    passwd='bluesky',
+    db='favolo_db',
+    charset="utf8"
+    )   
+    
+    # カーソルの取得
+    cursor = connection.cursor()
+
+    # クエリのセット
+    sql_pages_select = "SELECT BIN_TO_UUID(page_id) FROM favolo_pages where accesskey=%s;"
+
+    sql_members_select = "SELECT BIN_TO_UUID(user_id) FROM favolo_members where mail=%s;"
+
+    sql_buzz_update = "UPDATE favolo_buzz SET likes = likes + 1 where page_id=UUID_TO_BIN(%s);"  
+
+    sql_likes_insert = "INSERT into favolo_likes (user_id, page_id) values(UUID_TO_BIN(%s), UUID_TO_BIN(%s));"
+
+    sql_buzz_select = "SELECT likes FROM favolo_buzz where page_id=UUID_TO_BIN(%s);"
+
+
+    # クエリの実行
+    cursor.execute(sql_pages_select, (accesskey, ))
+
+    # ページ情報の取得
+    row_pages = cursor.fetchone()
+    page_id = row_pages[0]
+
+    cursor.execute(sql_members_select, (email,))
+
+    # ユーザー情報の取得
+    row_members = cursor.fetchone()
+    user_id = row_members[0]
+
+    cursor.execute(sql_buzz_update, (page_id, ))
+
+    cursor.execute(sql_likes_insert, (user_id, page_id))
+
+    # いいね情報の取得
+    cursor.execute(sql_buzz_select, (page_id, ))
+    row_buzz = cursor.fetchone()
+    likes = row_buzz[0]
+
+    # 接続を終了する
+    cursor.close()
+    connection.commit()
+    connection.close() 
+
+    return JsonResponse({"likes":likes})
 
 

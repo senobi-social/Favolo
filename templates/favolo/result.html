@@ -42,7 +42,8 @@
             <div class="introduction-right">
                 <h3>{{ page_comment }}</h3>
                 <p>by {{ page_name }}</p>
-                <p><a href="{% url 'favolo:likes' page_accesskey %}"><span id="like">{{ page_likes }}</span>いいね！</a></p>       
+                <p><a href="{% url 'favolo:likes' page_accesskey %}"><span id="like">{{ page_likes }}</span>いいね！</a></p>  
+                <p><a onclick="api_likes()"><span id="like">{{ page_likes }}</span>いいね！</a></p>     
                 <!-- いいねボタンを追記 -->
                 <p>{{ page_likes }}</p>
             </div>   

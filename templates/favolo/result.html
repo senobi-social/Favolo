@@ -45,6 +45,7 @@
                 <p><a href="{% url 'favolo:likes' page_accesskey %}"><span id="like">{{ page_likes }}</span>いいね！</a></p>  
                 <p><a onclick="api_likes()"><span id="like">{{ page_likes }}</span>いいね！</a></p>     
                 <!-- いいねボタンを追記 -->
+                <p>{{ page_liked_status }}</p>
                 <p>{{ page_likes }}</p>
             </div>   
         </div>

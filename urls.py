@@ -27,5 +27,4 @@ urlpatterns = [
     path('all', views.all_pages, name='all'),
     path('<str:accesskey>', views.pages, name='accesskey'),
     path('<str:accesskey>/like/', views.likes, name="likes"),
-    path('api/<str:accesskey>/like/', views.api_likes, name="api_likes"),
 ]

@@ -27,6 +27,7 @@ import random, string
 
 # Ajax、JSONに関するimport
 from django.http.response import JsonResponse
+from django.template.loader import render_to_string
 
 # index.html　で使用
 # mainクラス
@@ -943,65 +944,5 @@ def likes(request, accesskey):
 
     return redirect('favolo:accesskey', accesskey)
 
-
-@login_required
-def api_likes(request, accesskey):
-
-    # セッションからユーザー情報を取得
-    username = request.session.get('username')
-    email = request.session.get('email')
-
-    # データベースへの接続
-    connection = MySQLdb.connect(
-    host='localhost',
-    user='bluesky',
-    passwd='bluesky',
-    db='favolo_db',
-    charset="utf8"
-    )   
-    
-    # カーソルの取得
-    cursor = connection.cursor()
-
-    # クエリのセット
-    sql_pages_select = "SELECT BIN_TO_UUID(page_id) FROM favolo_pages where accesskey=%s;"
-
-    sql_members_select = "SELECT BIN_TO_UUID(user_id) FROM favolo_members where mail=%s;"
-
-    sql_buzz_update = "UPDATE favolo_buzz SET likes = likes + 1 where page_id=UUID_TO_BIN(%s);"  
-
-    sql_likes_insert = "INSERT into favolo_likes (user_id, page_id) values(UUID_TO_BIN(%s), UUID_TO_BIN(%s));"
-
-    sql_buzz_select = "SELECT likes FROM favolo_buzz where page_id=UUID_TO_BIN(%s);"
-
-
-    # クエリの実行
-    cursor.execute(sql_pages_select, (accesskey, ))
-
-    # ページ情報の取得
-    row_pages = cursor.fetchone()
-    page_id = row_pages[0]
-
-    cursor.execute(sql_members_select, (email,))
-
-    # ユーザー情報の取得
-    row_members = cursor.fetchone()
-    user_id = row_members[0]
-
-    cursor.execute(sql_buzz_update, (page_id, ))
-
-    cursor.execute(sql_likes_insert, (user_id, page_id))
-
-    # いいね情報の取得
-    cursor.execute(sql_buzz_select, (page_id, ))
-    row_buzz = cursor.fetchone()
-    likes = row_buzz[0]
-
-    # 接続を終了する
-    cursor.close()
-    connection.commit()
-    connection.close() 
-
-    return JsonResponse({"likes":likes})
 
 

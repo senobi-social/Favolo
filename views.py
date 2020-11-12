@@ -324,6 +324,10 @@ def result(request):
     # zip関数でまとめる
     List = zip(textList, imageList, idList)
 
+    # プロフィール画像の取得
+    profile_image = get_profile_image(request, twitter)
+    request.session['page_profile_image'] = profile_image
+
     # いいねの状態を把握する
     liked = liked_status(request, accesskey)
     # いいねの状態をセッションに保存(一時的)
@@ -336,6 +340,7 @@ def result(request):
         'page_title': page_title,
         'page_comment': page_comment,
         'page_name': username,
+        'page_profile_image': profile_image,
         'page_likes': likes,
         'page_liked_status': liked,
         'username': username,
@@ -346,6 +351,25 @@ def result(request):
         'list': List,
     }
     return render(request, 'favolo/result.html', params) #第２引数には使うテンプレートを指定
+
+
+# get_profile_image()
+# ユーザー名からプロフィール画像を取得
+def get_profile_image(request, twitter):
+    url = 'https://api.twitter.com/1.1/users/show.json'
+    name = request.session.get('account')
+    params = {'screen_name': name, }
+    res = twitter.get(url, params = params)
+
+    if res.status_code == 200:
+        load = json.loads(res.text)
+        if 'profile_image_url_https' in load:
+            profile_image = load['profile_image_url_https']
+            return profile_image
+    str = "画像がありません"
+    return str
+
+
 
 # get_fav_list()
 # ユーザー名からいいねリストを取得
@@ -669,6 +693,7 @@ def pages(request, accesskey):
     # セッションからユーザー情報を取得
     username = request.session.get('username')
     account = request.session.get('account')
+    profile_image = request.session.get('page_profile_image')
 
     # データベースへの接続
     connection = MySQLdb.connect(
@@ -778,6 +803,7 @@ def pages(request, accesskey):
         'page_accesskey': accesskey,
         'page_name': name,
         'page_account': page_account,
+        'page_profile_image': profile_image,
         'page_design': design,
         'page_title': title,
         'page_comment': comment,

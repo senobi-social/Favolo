@@ -16,6 +16,8 @@
                 </div>
             </div>
             <div class="header-right">
+                <!-- プロフィール画像 -->
+                <a href="{% url 'favolo:result' %}"><img src="{{ page_profile_image }}" alt=""></a>
                 <nav class="global-nav">
                     <ul class="global-nav__list">
                       <li class="global-nav__item"><a href="{% url 'favolo:result' %}">{{ username }}</a></li>

@@ -4,17 +4,37 @@
 <html lang="ja">
     <head>
         <meta charset="utf-8">
-        <title>Favolo New Account</title>
+        <title>{{ title }}</title>
         <link rel="stylesheet" type="text/css" href="{% static 'favolo/css/index.css' %}" />
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
     </head>
     <body>
-        <h1>アカウント作成</h1>
-        <form action="{% url 'favolo:signup' %}" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Sign Up">
-        </form>
-        <p>or <a href= "{% url 'favolo:login' %}">Login</a></p>
+        <div class="title">サインアップ</div>
+        <div class="box">
+            <form action="{% url 'favolo:signup' %}" method="post">
+                {% csrf_token %}
+                <div class="field">
+                    {{ form.username }}
+                </div>
+                <div class="field">
+                    {{ form.account }}
+                </div>
+                <div class="field">
+                    {{ form.email }}
+                </div>
+                <div class="field">
+                    {{ form.enter_password }}
+                </div>
+                <div class="field">
+                    {{ form.retype_password }}
+                </div>
+                <div class="main-button">
+                    <input class="btn btn-primary my-2" type="submit" value="サインアップ">
+                </div>
+            </form>
+            <div class="sub-button">
+                <p>or <a href= "{% url 'favolo:login' %}" class="btn btn-primary btn-sm" role="button">ログイン</a></p>
+            </div>
+        </div>
     </body>
 </html>

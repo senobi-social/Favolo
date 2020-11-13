@@ -9,14 +9,23 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
     </head>
     <body>
-        <h1>ログインページ</h1>
-        <form action="{% url 'favolo:login' %}" method="post">
-            {% csrf_token %}
-            <label>メールアドレス</label>
-            {{ form.email }}
-            <label>パスワード</label>
-            {{ form.password }}
-            <input type="submit" value="Login">
-        </form>
+        <div class="title">ログイン</div>
+        <div class="box">
+            <form action="{% url 'favolo:login' %}" method="post">
+                {% csrf_token %}
+                <div class="field">
+                    {{ form.email }}
+                </div>
+                <div class="field">
+                    {{ form.password }}
+                </div>
+                <div class="main-button">
+                    <input class="btn btn-primary my-2" type="submit" value="ログイン">
+                </div>   
+            </form>
+            <div class="sub-button">
+                <p>or <a href= "{% url 'favolo:signup' %}" class="btn btn-primary btn-sm" role="button">サインアップ</a></p>
+            </div>
+        </div>
     </body>
 </html>

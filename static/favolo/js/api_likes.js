@@ -6,7 +6,7 @@ function api_likes() {
     request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
             var received_data = JSON.parse(request.responseText);
-            btn.innerText = received_data.like;
+            btn.innerText = received_data.likes;
         }
     }
     request.open("GET",api_url);

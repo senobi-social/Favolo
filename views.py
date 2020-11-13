@@ -105,6 +105,7 @@ def signup(request):
         form = SignUpForm()
 
     params = {
+        'title': 'Favolo',
         'form':form,
         }
     return render(request, 'favolo/signup.html', params)
@@ -210,7 +211,7 @@ def account_login(request):
         form = LoginForm()
 
     params = {
-        'title': 'ログインページ',
+        'title': 'Favolo',
         'form':form,
     }
     return render(request, 'favolo/login.html', params)

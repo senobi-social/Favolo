@@ -11,9 +11,9 @@ class FavoloForm(forms.Form):
 class SignUpForm(forms.Form):
     username = forms.CharField(label='username', widget=forms.TextInput(attrs={'placeholder':'ユーザ名', 'class':'form-control'}))
     account = forms.CharField(label='account', widget=forms.TextInput(attrs={'placeholder':'Twitterアカウント名', 'class':'form-control'}))
-    email = forms.CharField(label='email', widget=forms.TextInput)
-    enter_password = forms.CharField(label='password', widget=forms.PasswordInput)
-    retype_password = forms.CharField(widget=forms.PasswordInput)
+    email = forms.CharField(label='email', widget=forms.TextInput(attrs={'placeholder':'メールアドレス', 'class':'form-control'}))
+    enter_password = forms.CharField(label='password', widget=forms.PasswordInput(attrs={'placeholder':'パスワード', 'class':'form-control'}))
+    retype_password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder':'確認のためもう一度入力してください', 'class':'form-control'}))
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -53,8 +53,8 @@ class SignUpForm(forms.Form):
         return username, account, password
 
 class LoginForm(forms.Form):
-    email = forms.CharField(label='email', widget=forms.TextInput)
-    password = forms.CharField(label='password', widget=forms.PasswordInput)
+    email = forms.CharField(label='email', widget=forms.TextInput(attrs={'placeholder':'メールアドレス', 'class':'form-control'}))
+    password = forms.CharField(label='password', widget=forms.PasswordInput(attrs={'placeholder':'パスワード', 'class':'form-control'}))
 
     def clean_email(self):
         email = self.cleaned_data.get('email')

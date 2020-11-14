@@ -9,7 +9,12 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
     </head>
     <body>
-        <div class="title">サインアップ</div>
+        <div class="title-container">
+            <div class="title">サインアップ</div>
+            <div class="progress" style="height: 3px;">
+                <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
         <div class="box">
             <form action="{% url 'favolo:signup' %}" method="post">
                 {% csrf_token %}
@@ -32,6 +37,7 @@
                     <input class="btn btn-primary my-2" type="submit" value="サインアップ">
                 </div>
             </form>
+            <div class="note">登録することで利用規約に同意するものとします。</div>
             <div class="sub-button">
                 <p>or <a href= "{% url 'favolo:login' %}" class="btn btn-primary btn-sm" role="button">ログイン</a></p>
             </div>

@@ -9,7 +9,12 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
     </head>
     <body>
-        <div class="title">ログイン</div>
+        <div class="title-container">
+            <div class="title">ログイン</div>
+            <div class="progress" style="height: 3px;">
+                <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
         <div class="box">
             <form action="{% url 'favolo:login' %}" method="post">
                 {% csrf_token %}

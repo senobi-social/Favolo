@@ -463,9 +463,16 @@ def get_text(res, load, num):
 # settingsの設定ページ
 @login_required
 def settings(request):
+    username = request.session.get('username')
+    account = request.session.get('account')
+    page_profile_image = request.session.get('page_profile_image')
+
 
     params = {
-        'title': '設定画面',
+        'title': 'Favolo',
+        'username': username,
+        'account': account,
+        'page_profile_image': page_profile_image,
     }
     return render(request, 'favolo/settings.html', params)
 

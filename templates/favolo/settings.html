@@ -36,13 +36,18 @@
                     <div class="black-bg" id="js-black-bg"></div>
             </div>
         </header>
-        <br><br><br><br>
-        <h1>設定画面</h1>
-        <a href="{% url 'favolo:username' %}">ユーザーネーム設定</a>
-        <a href="{% url 'favolo:password' %}">パスワード設定</a>
-        <a href="{% url 'favolo:design' %}">デザイン設定</a>
-        <a href="{% url 'favolo:introduction' %}">タイトル/コメント設定</a>
-
+        <div class="leftNavigation">
+            <ul class="settings-nav">
+                <li class="setting-li"><a class="active" href="{% url 'favolo:username' %}">ユーザー</a></li>
+                <li class="setting-li"><a href="{% url 'favolo:password' %}">パスワード</a></li>
+                <li class="setting-li"><a href="{% url 'favolo:design' %}">デザイン</a></li>
+                <li class="setting-li"><a href="{% url 'favolo:introduction' %}">タイトル/コメント</a></li>
+            </ul>
+        </div>
+        <div class="rightContent">
+            <h1>ユーザーネームの変更</h1>
+            <p>たとえばユーザーネームの変更ができます</p>
+        </div>
         <!-- Swiper END -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.5/js/swiper.min.js"></script>
         <script type="text/javascript" src="{% static 'favolo/js/slide.js' %}"></script>

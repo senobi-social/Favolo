@@ -481,7 +481,13 @@ def settings(request):
 # settings/username.htmlで使用
 @login_required
 def settings_username(request):
+
+    # ユーザー情報の取得
     email = request.session.get('email')
+    username = request.session.get('username')
+    account = request.session.get('account')
+    profile_image = request.session.get('page_profile_image')
+
     if request.method == 'POST':
         form = SettingsUsernameForm(request.POST)
         if form.is_valid():
@@ -519,9 +525,12 @@ def settings_username(request):
         form = SettingsUsernameForm()
 
     params = {
-        'title': 'ユーザーネームの変更',
+        'title': 'Favolo',
         'form': form,
         'email': email,
+        'username': username,
+        'account': account,
+        'page_profile_image': profile_image,
     }
     return render(request, 'favolo/settings/username.html', params)
 
@@ -530,6 +539,13 @@ def settings_username(request):
 # settings/password.htmlで使用
 @login_required
 def settings_password(request):
+
+    # ユーザー情報の取得
+    email = request.session.get('email')
+    username = request.session.get('username')
+    account = request.session.get('account')
+    profile_image = request.session.get('page_profile_image')
+
     if request.method == 'POST':
         form = SettingsPasswordForm(request.POST)
         if form.is_valid():
@@ -570,7 +586,10 @@ def settings_password(request):
         form = SettingsPasswordForm()
 
     params = {
-        'title': 'パスワードの変更',
+        'title': 'Favolo',
+        'username': username,
+        'account': account,
+        'page_profile_image': profile_image,
         'form': form,
     }
     return render(request, 'favolo/settings/password.html', params)
@@ -580,6 +599,13 @@ def settings_password(request):
 # settings/design.htmlで使用
 @login_required
 def settings_design(request):
+
+    # ユーザー情報の取得
+    email = request.session.get('email')
+    username = request.session.get('username')
+    account = request.session.get('account')
+    profile_image = request.session.get('page_profile_image')
+
     if request.method == 'POST':
         form = SettingsDesignForm(request.POST)
         if form.is_valid():
@@ -626,7 +652,10 @@ def settings_design(request):
         form = SettingsDesignForm()
 
     params = {
-        'title': 'デザインの変更',
+        'title': 'Favolo',
+        'username': username,
+        'account': account,
+        'page_profile_image': profile_image,
         'form': form,
     }
     return render(request, 'favolo/settings/design.html', params)
@@ -636,6 +665,13 @@ def settings_design(request):
 # settings/introduction.htmlで使用
 @login_required
 def settings_introduction(request):
+
+    # ユーザー情報の取得
+    email = request.session.get('email')
+    username = request.session.get('username')
+    account = request.session.get('account')
+    profile_image = request.session.get('page_profile_image')
+    
     if request.method == 'POST':
         form = SettingsIntroductionForm(request.POST)
         if form.is_valid():
@@ -690,7 +726,10 @@ def settings_introduction(request):
         form = SettingsIntroductionForm(initial = initial_dict)
 
     params = {
-        'title': 'タイトル/コメントの変更',
+        'title': 'Favolo',
+        'username': username,
+        'account': account,
+        'page_profile_image': profile_image,
         'form': form,
     }
     return render(request, 'favolo/settings/introduction.html', params)

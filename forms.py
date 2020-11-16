@@ -65,16 +65,16 @@ class LoginForm(forms.Form):
         return password
 
 class SettingsUsernameForm(forms.Form):
-    new_username = forms.CharField(label='new_username', widget=forms.TextInput)
+    new_username = forms.CharField(label='new_username', widget=forms.TextInput(attrs={'placeholder':'新規ユーザーネーム', 'class':'form-control'}))
 
     def clean_new_username(self):
         new_username = self.cleaned_data.get('new_username')
         return new_username
 
 class SettingsPasswordForm(forms.Form):
-    email = forms.CharField(label='email', widget=forms.TextInput)
-    new_password = forms.CharField(label='new_password', widget=forms.PasswordInput)
-    retype_password = forms.CharField(widget=forms.PasswordInput)  
+    email = forms.CharField(label='email', widget=forms.TextInput(attrs={'placeholder':'メールアドレス', 'class':'form-control'}))
+    new_password = forms.CharField(label='new_password', widget=forms.PasswordInput(attrs={'placeholder':'新規パスワード', 'class':'form-control'}))
+    retype_password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder':'新規パスワード（確認）', 'class':'form-control'}))  
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -103,7 +103,7 @@ class SettingsPasswordForm(forms.Form):
 
 
 class SettingsDesignForm(forms.Form):
-    new_design = forms.IntegerField(label='new_design', widget=forms.NumberInput)
+    new_design = forms.IntegerField(label='new_design', widget=forms.NumberInput(attrs={'placeholder':'デザイン', 'class':'form-control'}))
 
     def clean_new_design(self):
         new_design = self.cleaned_data.get('new_design')

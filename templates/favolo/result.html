@@ -7,12 +7,13 @@
         <title>{{ title }}</title>
         <link rel="stylesheet" type="text/css" href="{% static 'favolo/css/style.css' %}" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.5/css/swiper.css">
+        <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
     </head>
     <body>
         <header>
             <div class="header-left">
                 <div class="logo">
-                    <p>{{ title }}</p>
+                    <h3>{{ title }}</h3>
                 </div>
             </div>
             <div class="header-right">
@@ -38,17 +39,9 @@
             </div>
         </header>
         <div class="introduction">
-            <div class="introduction-left">
-                <h2>{{ page_title }}</h2>
-            </div>
-            <div class="introduction-right">
-                <h3>{{ page_comment }}</h3>
-                <p>by {{ page_name }}</p>
-                <p><a href="{% url 'favolo:likes' page_accesskey %}"><span id="like">{{ page_likes }}</span>いいね！</a></p>     
-                <!-- いいねボタンを追記 -->
-                <p>{{ page_liked_status }}</p>
-                <p>{{ page_likes }}</p>
-            </div>   
+            <h2>{{ page_title }}</h2>
+            <p>by {{ page_name }}</p>
+            <p>{{ page_comment }}</p>   
         </div>
         <div class="archive">
             {% for text, image, id in list %}
@@ -83,7 +76,14 @@
             </div>
             {% endfor %}
         </div>
-        <br>
+        <footer>
+            <!-- いいねボタンを追記 -->
+            {% if page_liked_status is False %}
+            <p><a href="{% url 'favolo:likes' page_accesskey %}"><i class="far fa-heart fa-2x"></i> {{ page_likes }}</a></p>
+            {% else %}
+            <p><a class="red" href="{% url 'favolo:likes' page_accesskey %}"><i class="fas fa-heart fa-2x icon-red"></i> {{ page_likes }}</a></p>
+            {% endif %}
+        </footer>
         <!-- Swiper END -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.5/js/swiper.min.js"></script>
         <script type="text/javascript" src="{% static 'favolo/js/slide.js' %}"></script>

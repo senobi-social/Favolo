@@ -1,20 +1,62 @@
 <!-- 静的ファイルの使用-->
 {% load static %}
+{% load widget_tweaks %}
 <!doctype html>
 <html lang="ja">
     <head>
         <meta charset="utf-8">
         <title>{{ title }}</title>
-        <link rel="stylesheet" type="text/css" href="{% static 'favolo/css/index.css' %}" />
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="{% static 'favolo/css/settings.css' %}" />
     </head>
     <body>
-        <h1>{{ email }}</h1>
-        <h1>デザインの変更</h1>
-        <form action="{% url 'favolo:design' %}" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="UPDATE">
-        </form>
+        <header>
+            <div class="header-left">
+                <div class="logo">
+                    <p>{{ title }}</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <!-- プロフィール画像 -->
+                <a href="{% url 'favolo:result' %}"><img src="{{ page_profile_image }}" alt=""></a>
+                <nav class="global-nav">
+                    <ul class="global-nav__list">
+                      <li class="global-nav__item"><a href="{% url 'favolo:result' %}">{{ username }}</a></li>
+                      <li class="global-nav__item"><a href="">{{ account }}</a></li>
+                      <li class="global-nav__item"><a href="{% url 'favolo:settings' %}">設定</a></li>
+                      <li class="global-nav__item"><a href="{% url 'favolo:all' %}">記事一覧</a></li>
+                      <li class="global-nav__item"><a href="">利用規約</a></li>
+                      <li class="global-nav__item"><a href="">ドキュメント</a></li>
+                      <li class="global-nav__item"><a href="{% url 'favolo:logout' %}">ログアウト</a></li>
+                    </ul>
+                </nav>
+                    <div class="hamburger" id="js-hamburger">
+                        <span class="hamburger__line hamburger__line--1"></span>
+                        <span class="hamburger__line hamburger__line--2"></span>
+                        <span class="hamburger__line hamburger__line--3"></span>
+                    </div>
+                    <div class="black-bg" id="js-black-bg"></div>
+            </div>
+        </header>
+        <div class="leftNavigation">
+            <ul class="settings-nav">
+                <li class="setting-li"><a href="{% url 'favolo:username' %}">ユーザー</a></li>
+                <li class="setting-li"><a href="{% url 'favolo:password' %}">パスワード</a></li>
+                <li class="setting-li"><a class="active" href="{% url 'favolo:design' %}">デザイン</a></li>
+                <li class="setting-li"><a href="{% url 'favolo:introduction' %}">タイトル/コメント</a></li>
+            </ul>
+        </div>
+        <div class="rightContent">
+            <h1>デザインの変更</h1>
+            <form action="{% url 'favolo:design' %}" method="post">
+                {% csrf_token %}
+                <div class="field">
+                    {{ form.new_design|add_class:'form' }}
+                </div>
+                <input class="main-button" type="submit" value="更新する">
+            </form>
+        </div>
+        <!-- Swiper END -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.5/js/swiper.min.js"></script>
+        <script type="text/javascript" src="{% static 'favolo/js/slide.js' %}"></script>
     </body>
 </html>

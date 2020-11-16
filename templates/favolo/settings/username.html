@@ -1,5 +1,6 @@
 <!-- 静的ファイルの使用-->
 {% load static %}
+{% load widget_tweaks %}
 <!doctype html>
 <html lang="ja">
     <head>
@@ -45,17 +46,16 @@
             </ul>
         </div>
         <div class="rightContent">
-            <h1>{{ email }}</h1>
-            <h1>ユーザーネームの変更</h1>
+            <div class="title">
+                <h1>ユーザーネームの変更</h1>
+            </div>
             <form action="{% url 'favolo:username' %}" method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
-                <input type="submit" value="UPDATE">
+                <div class="field">
+                    {{ form.new_username|add_class:'form' }}
+                </div>
+                <input class="main-button" type="submit" value="更新する">
             </form>
-            <p>これはてすとです</p>
-            <p>あ</p>
-            <p>ああああああああああ</p>
-            <p>ああああああああああああああああ</p>
         </div>
         <!-- Swiper END -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.5/js/swiper.min.js"></script>

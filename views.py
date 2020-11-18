@@ -334,6 +334,13 @@ def result(request):
     # いいねの状態をセッションに保存(一時的)
     request.session['page_liked_status'] = liked
 
+    # フォローの状態を把握する
+    status = followed_status(request, accesskey)
+    followed_status_code = status[0]
+    followed = status[1]
+    # フォローの状態をセッションに保存（一時的）
+    request.session['page_followed_status'] = followed
+
 
     params = {
         'title': 'Favolo',
@@ -344,6 +351,8 @@ def result(request):
         'page_profile_image': profile_image,
         'page_likes': likes,
         'page_liked_status': liked,
+        'page_followed_status': followed,
+        'page_followed_status': followed_status_code,
         'username': username,
         'account': account,
         'textList': textList,
@@ -839,6 +848,13 @@ def pages(request, accesskey):
     # いいねの状態をセッションに保存(一時的)
     request.session['page_liked_status'] = liked
 
+    # フォローの状態を把握する
+    status = followed_status(request, accesskey)
+    followed_status_code = status[0]
+    followed = status[1]
+    # フォローの状態をセッションに保存（一時的）
+    request.session['page_followed_status'] = followed
+
 
     # 注意
     # サイドバーに表示させるusernameと
@@ -856,6 +872,8 @@ def pages(request, accesskey):
         'page_comment': comment,
         'page_likes': likes,
         'page_liked_status': liked,
+        'page_followed_status': followed,
+        'page_followed_status_code': followed_status_code,
         'textList': textList,
         'imageList': imageList,
         'idList': idList,
@@ -1016,6 +1034,168 @@ def likes(request, accesskey):
         request.session['page_liked_status'] = liked
 
     return redirect('favolo:accesskey', accesskey)
+
+# ユーザーが特定のユーザーをフォローしているか判別
+# フォロー数、フォロワー数はresult、pagesで行っている
+@login_required
+def followed_status(request, accesskey):
+
+    # セッションからログインユーザーの情報の取得
+    # ページユーザーの情報の取得はアクセスキーを使って行う
+    username = request.session.get('username')
+    email = request.session.get('email')
+
+    # データベースへの接続
+    connection = MySQLdb.connect(
+    host='localhost',
+    user='bluesky',
+    passwd='bluesky',
+    db='favolo_db',
+    charset="utf8"
+    )   
+    
+    # カーソルの取得
+    cursor = connection.cursor() 
+
+    # クエリのセット
+    # ページユーザーのIDを取得する
+    sql_pages_select = "SELECT BIN_TO_UUID(user_id) FROM favolo_pages where accesskey=%s;"
+
+    # ログインユーザーのIDを取得する
+    sql_members_select = "SELECT BIN_TO_UUID(user_id) FROM favolo_members where mail=%s;"
+
+    # ２つのIDをもつレコードがあるか調べる
+    sql_followrelation_select = "SELECT COUNT(*) FROM favolo_follow_relation where user_id = UUID_TO_BIN(%s) and followed_id = UUID_TO_BIN(%s);"
+
+    # クエリの実行
+    # ページユーザー情報の取得
+    cursor.execute(sql_pages_select, (accesskey, ))
+    row_pages = cursor.fetchone()
+    followed_id = row_pages[0]
+
+    # ログインユーザー情報の取得
+    cursor.execute(sql_members_select, (email,))
+    row_members = cursor.fetchone()
+    user_id = row_members[0]
+
+    # ログインユーザーとページユーザーが同一人物か判定
+    if followed_id == user_id:
+        followed_status_code = 1
+    else:
+        followed_status_code = 2
+
+    # favolo_likesに存在するか（いいねされているか確認）
+    cursor.execute(sql_followrelation_select, (user_id, followed_id))
+    row_followrelation = cursor.fetchone()
+    follows = row_followrelation[0]
+
+    # もしfollowsが0より大きかったらTrue
+    # followssが0だったらFalseを返す
+    followed = False
+    if follows > 0 :
+        followed = True
+    
+    return followed_status_code, followed
+
+@login_required
+def follows(request, accesskey):
+
+    # セッションからユーザー情報を取得
+    username = request.session.get('username')
+    email = request.session.get('email')
+
+    # セッションからいいねの状態を取得
+    followed = request.session.get('page_followed_status')
+
+    # データベースへの接続
+    connection = MySQLdb.connect(
+    host='localhost',
+    user='bluesky',
+    passwd='bluesky',
+    db='favolo_db',
+    charset="utf8"
+    )   
+    
+    # カーソルの取得
+    cursor = connection.cursor()
+
+    # 共通クエリのセット
+    sql_pages_select = "SELECT BIN_TO_UUID(user_id) FROM favolo_pages where accesskey=%s;"
+
+    sql_members_select = "SELECT BIN_TO_UUID(user_id) FROM favolo_members where mail=%s;"
+
+    # 共通クエリの実行
+    # ページユーザー情報の取得
+    cursor.execute(sql_pages_select, (accesskey, ))
+    row_pages = cursor.fetchone()
+    followed_id = row_pages[0]
+
+    # ログインユーザー情報の取得
+    cursor.execute(sql_members_select, (email,))
+    row_members = cursor.fetchone()
+    user_id = row_members[0]
+
+    # 自分自身はフォローできないようにする
+    if user_id == followed_id:
+        followed = False
+        request.session['page_followed_status'] = followed
+    else:
+        if followed == False:
+            # クエリのセット
+            # 新規フォロー関係の挿入
+            sql_followrelation_insert = "INSERT INTO favolo_follow_relation (user_id, followed_id) values(UUID_TO_BIN(%s), UUID_TO_BIN(%s));"
+
+            # ログインユーザーのフォロー数を１つ増やす
+            sql_follow_update = "UPDATE favolo_follow_count SET follow = follow + 1 where user_id=UUID_TO_BIN(%s);"  
+
+            # ページユーザーのフォロワー数を１つ増やす
+            sql_followed_update = "UPDATE favolo_follow_count SET followed = followed + 1 where user_id=UUID_TO_BIN(%s);"
+
+            # クエリの実行
+            cursor.execute(sql_followrelation_insert, (user_id, followed_id))
+
+            cursor.execute(sql_follow_update, (user_id, ))
+
+            cursor.execute(sql_followed_update, (followed_id, ))
+
+            # 接続を終了する
+            cursor.close()
+            connection.commit()
+            connection.close() 
+
+            # フォローした状態にする
+            followed = True
+            request.session['page_followed_status'] = followed
+
+        else:
+            # クエリのセット
+            # フォロー関係の削除
+            sql_followrelation_delete = "DELETE FROM favolo_follow_relation where user_id=UUID_TO_BIN(%s) and followed_id = UUID_TO_BIN(%s);"
+
+            # ログインユーザーのフォロー数を１つ減らす
+            sql_follow_update = "UPDATE favolo_follow_count SET follow = follow - 1 where user_id=UUID_TO_BIN(%s);"
+
+            # ページユーザーのフォロワー数を１つ減らす
+            sql_followed_update = "UPDATE favolo_follow_count SET followed = followed - 1 where user_id=UUID_TO_BIN(%s);"
+
+            # クエリの実行
+            cursor.execute(sql_followrelation_delete, (user_id, followed_id))
+
+            cursor.execute(sql_follow_update, (user_id, ))
+
+            cursor.execute(sql_followed_update, (followed_id, ))
+
+            # 接続を終了する
+            cursor.close()
+            connection.commit()
+            connection.close() 
+
+            # フォローしていない状態にする
+            followed = False
+            request.session['page_followed_status'] = followed
+
+    return redirect('favolo:accesskey', accesskey)
+
 
 
 

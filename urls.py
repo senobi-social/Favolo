@@ -27,4 +27,5 @@ urlpatterns = [
     path('all', views.all_pages, name='all'),
     path('<str:accesskey>', views.pages, name='accesskey'),
     path('<str:accesskey>/like/', views.likes, name="likes"),
+    path('<str:accesskey>/follow/', views.follows, name="follows"),
 ]

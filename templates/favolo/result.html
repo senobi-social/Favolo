@@ -83,7 +83,17 @@
             {% else %}
             <p><a class="red" href="{% url 'favolo:likes' page_accesskey %}"><i class="fas fa-heart fa-2x icon-red"></i> {{ page_likes }}</a></p>
             {% endif %}
+            <!-- フォローボタンを追記 -->
+            {% if page_followed_status_code is 2 %}
+                {% if page_followed_status is False %}
+                <p><a href="{% url 'favolo:follows' page_accesskey %}">フォローする</a></p>
+                {% else %}
+                <p><a href="{% url 'favolo:follows' page_accesskey %}">フォローをやめる</a></p>
+                {% endif %}
+            {% endif %}
+
         </footer>
+
         <!-- Swiper END -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.5/js/swiper.min.js"></script>
         <script type="text/javascript" src="{% static 'favolo/js/slide.js' %}"></script>

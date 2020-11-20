@@ -10,6 +10,7 @@ from .forms import SettingsUsernameForm
 from .forms import SettingsPasswordForm
 from .forms import SettingsDesignForm
 from .forms import SettingsIntroductionForm
+from .forms import SettingsTagsForm
 
 # TwitterAPIの仕様に関するimport
 import json
@@ -81,15 +82,36 @@ def signup(request):
 
             sql_pages_insert = "INSERT INTO favolo_pages (page_id ,user_id ,accesskey ,design ,title ,comment) \
                 values(UUID_TO_BIN(UUID()), UUID_TO_BIN(%s), %s, 1, 'Favoにタイトルをつけてみよう！', 'コメントで紹介しよう！');"
+
+            sql_pages_select = "SELECT BIN_TO_UUID(page_id) FROM favolo_pages where user_id=UUID_TO_BIN(%s);"
+
+            sql_buzz_insert = "INSERT INTO favolo_buzz (page_id, likes) values(UUID_TO_BIN(%s), default);"
+
+            sql_count_insert = "INSERT INTO favolo_follow_count (user_id, follow, followed) values(UUID_TO_BIN(%s), default, default);"
 	
             # クエリの実行
+
+            # メンバーに追加
             cursor.execute(sql_members_insert, (username, email, hash_pass, account))
+
+            # user_idを取得
             cursor.execute(sql_members_select, (email,))
+            row_members = cursor.fetchone()
+            user_id = row_members[0]
 
-            row = cursor.fetchone()
-            user_id = row[0]
-
+            # ページに追加
             cursor.execute(sql_pages_insert, (user_id, accesskey, ))
+
+            # page_idを取得
+            cursor.execute(sql_pages_select, (user_id,))
+            row_pages = cursor.fetchone()
+            page_id = row_pages[0]
+
+            # buzzに追加
+            cursor.execute(sql_buzz_insert, (page_id, ))
+
+            # follow_countに追加
+            cursor.execute(sql_count_insert, (user_id, ))
         
             # 接続を終了する
             cursor.close()
@@ -742,6 +764,101 @@ def settings_introduction(request):
         'form': form,
     }
     return render(request, 'favolo/settings/introduction.html', params)
+
+# タグの変更機能
+# settings/tags.htmlで使用
+@login_required
+def settings_tags(request):
+
+    # ユーザー情報の取得
+    email = request.session.get('email')
+    username = request.session.get('username')
+    account = request.session.get('account')
+    profile_image = request.session.get('page_profile_image')
+
+    if request.method == 'POST':
+        form = SettingsTagsForm(request.POST)
+        if form.is_valid():
+            tags = request.POST.getlist('new_tags') # リストで返ってくる
+            email = request.session.get('email')
+
+            # データベースへの接続
+            connection = MySQLdb.connect(
+            host='localhost',
+            user='bluesky',
+            passwd='bluesky',
+            db='favolo_db',
+            charset="utf8"
+            )
+                
+            # カーソルの取得
+            cursor = connection.cursor()  
+
+            # クエリのセット
+            sql_members_select = "SELECT BIN_TO_UUID(user_id) FROM favolo_members where mail=%s;"
+
+            sql_pages_select = "SELECT BIN_TO_UUID(page_id) FROM favolo_pages where user_id=UUID_TO_BIN(%s);"
+
+            sql_tags_delete = "DELETE from favolo_tags_map where page_id=UUID_TO_BIN(%s);"
+
+            sql_tags_select = "SELECT BIN_TO_UUID(tag_id) FROM favolo_tags_master where master_id=%s;"
+
+            sql_tags_insert = "INSERT INTO favolo_tags_map (tag_id, page_id) values (UUID_TO_BIN(%s), UUID_TO_BIN(%s));"
+    
+            # クエリの実行
+            # ユーザーIDの取得
+            cursor.execute(sql_members_select, (email, ))
+            row_members = cursor.fetchone()
+            user_id = row_members[0]
+
+            # ページIDの取得
+            cursor.execute(sql_pages_select, (user_id, ))
+            row_pages = cursor.fetchone()
+            page_id = row_pages[0]
+
+            # 既存タグマップの削除
+            cursor.execute(sql_tags_delete, (page_id, ))
+
+            for new_tag in tags:
+                # タグIDの取得
+                cursor.execute(sql_tags_select, (new_tag, ))
+                row_tags = cursor.fetchone()
+                tag_id = row_tags[0]
+
+                # 新規タグマップの挿入
+                # ページIDとタグIDを使用
+                cursor.execute(sql_tags_insert, (tag_id, page_id))
+
+            # 接続を終了する
+            cursor.close()
+            connection.commit()
+            connection.close()
+
+            test = tags
+            
+            params = {
+                'title': 'Favolo',
+                'username': username,
+                'account': account,
+                'page_profile_image': profile_image,
+                'form': form,
+                'result': test,
+            }
+            # return redirect('favolo:result')
+            return render(request, 'favolo/settings/tags.html', params)
+    else:
+        form = SettingsTagsForm()
+        test = 'これはタグ'
+
+    params = {
+        'title': 'Favolo',
+        'username': username,
+        'account': account,
+        'page_profile_image': profile_image,
+        'form': form,
+        'result': test,
+    }
+    return render(request, 'favolo/settings/tags.html', params)
 
 @login_required
 def pages(request, accesskey):

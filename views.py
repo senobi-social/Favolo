@@ -279,6 +279,10 @@ def result(request):
 
     sql_buzz_select = "SELECT likes FROM favolo_buzz where page_id=UUID_TO_BIN(%s);"  
 
+    sql_tags_select = "SELECT BIN_TO_UUID(tag_id) FROM favolo_tags_map where page_id=UUID_TO_BIN(%s);"
+
+    sql_tagname_select = "SELECT name FROM favolo_tags_master where tag_id=UUID_TO_BIN(%s);"
+
     # クエリの実行
     cursor.execute(sql_members_select, (email, ))
 
@@ -298,6 +302,20 @@ def result(request):
     # いいね情報の取得
     row_buzz = cursor.fetchone()
     likes = row_buzz[0]
+
+    # タグ情報の取得
+    cursor.execute(sql_tags_select, (page_id, ))
+    row_tags = cursor.fetchone()
+
+    if row_tags == None:
+        # タグが設定されていない場合の処理
+        tag_name = None
+    else:
+        # タグが設定されている場合の処理
+        tag_id = row_tags[0]
+        cursor.execute(sql_tagname_select, (tag_id, ))
+        row_tagname = cursor.fetchone()
+        tag_name = row_tagname[0]
 
     # 接続を終了する
     cursor.close()
@@ -375,6 +393,7 @@ def result(request):
         'page_liked_status': liked,
         'page_followed_status': followed,
         'page_followed_status': followed_status_code,
+        'page_tag_name': tag_name,
         'username': username,
         'account': account,
         'textList': textList,
@@ -819,36 +838,26 @@ def settings_tags(request):
             # 既存タグマップの削除
             cursor.execute(sql_tags_delete, (page_id, ))
 
-            for new_tag in tags:
-                # タグIDの取得
-                cursor.execute(sql_tags_select, (new_tag, ))
-                row_tags = cursor.fetchone()
-                tag_id = row_tags[0]
+            # 単一選択なのでfor文は回さない
+            # 将来的に複数選択にする場合はfor文を使ってリストから取り出してください
+            # タグIDの取得
+            cursor.execute(sql_tags_select, (tags, ))
+            row_tags = cursor.fetchone()
+            tag_id = row_tags[0]
 
-                # 新規タグマップの挿入
-                # ページIDとタグIDを使用
-                cursor.execute(sql_tags_insert, (tag_id, page_id))
+            # 新規タグマップの挿入
+            # ページIDとタグIDを使用
+            cursor.execute(sql_tags_insert, (tag_id, page_id))
 
             # 接続を終了する
             cursor.close()
             connection.commit()
             connection.close()
-
-            test = tags
             
-            params = {
-                'title': 'Favolo',
-                'username': username,
-                'account': account,
-                'page_profile_image': profile_image,
-                'form': form,
-                'result': test,
-            }
-            # return redirect('favolo:result')
-            return render(request, 'favolo/settings/tags.html', params)
+            request.session['tags'] = tags
+            return redirect('favolo:result')
     else:
         form = SettingsTagsForm()
-        test = 'これはタグ'
 
     params = {
         'title': 'Favolo',
@@ -856,7 +865,6 @@ def settings_tags(request):
         'account': account,
         'page_profile_image': profile_image,
         'form': form,
-        'result': test,
     }
     return render(request, 'favolo/settings/tags.html', params)
 
@@ -887,6 +895,10 @@ def pages(request, accesskey):
 
     sql_buzz_select = "SELECT likes FROM favolo_buzz where page_id=UUID_TO_BIN(%s);"
 
+    sql_tags_select = "SELECT BIN_TO_UUID(tag_id) FROM favolo_tags_map where page_id=UUID_TO_BIN(%s);"
+
+    sql_tagname_select = "SELECT name FROM favolo_tags_master where tag_id=UUID_TO_BIN(%s);"
+
     # クエリの実行
     cursor.execute(sql_pages_select, (accesskey,))
 
@@ -910,6 +922,20 @@ def pages(request, accesskey):
     # いいね情報の取得
     row_buzz = cursor.fetchone()
     likes = row_buzz[0]
+
+    # タグ情報の取得
+    cursor.execute(sql_tags_select, (page_id, ))
+    row_tags = cursor.fetchone()
+
+    if row_tags == None:
+        # タグが設定されていない場合の処理
+        tag_name = None
+    else:
+        # タグが設定されている場合の処理
+        tag_id = row_tags[0]
+        cursor.execute(sql_tagname_select, (tag_id, ))
+        row_tagname = cursor.fetchone()
+        tag_name = row_tagname[0]
 
     # 接続を終了する
     cursor.close()
@@ -991,6 +1017,7 @@ def pages(request, accesskey):
         'page_liked_status': liked,
         'page_followed_status': followed,
         'page_followed_status_code': followed_status_code,
+        'page_tag_name': tag_name,
         'textList': textList,
         'imageList': imageList,
         'idList': idList,

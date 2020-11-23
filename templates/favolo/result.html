@@ -40,8 +40,13 @@
         </header>
         <div class="introduction">
             <h2>{{ page_title }}</h2>
-            <p>by {{ page_name }}</p>
-            <p>{{ page_comment }}</p>   
+            <p class="comment">by {{ page_name }}</p>
+            <p class="comment">{{ page_comment }}</p>
+            <div class="tags-box">
+                {% if page_tag_name %}
+                <p class="tag"><i class="fas fa-tags"></i> {{ page_tag_name }}</p>
+                {% endif %} 
+            </div>    
         </div>
         <div class="archive">
             {% for text, image, id in list %}
@@ -91,7 +96,6 @@
                 <p><a href="{% url 'favolo:follows' page_accesskey %}">フォローをやめる</a></p>
                 {% endif %}
             {% endif %}
-
         </footer>
 
         <!-- Swiper END -->

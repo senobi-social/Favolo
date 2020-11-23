@@ -1,5 +1,6 @@
 <!-- 静的ファイルの使用-->
 {% load static %}
+<!-- フォームデザインのカスタマイズ -->
 {% load widget_tweaks %}
 <!doctype html>
 <html lang="ja">
@@ -42,19 +43,16 @@
                 <li class="setting-li"><a href="{% url 'favolo:username' %}">ユーザー</a></li>
                 <li class="setting-li"><a href="{% url 'favolo:password' %}">パスワード</a></li>
                 <li class="setting-li"><a href="{% url 'favolo:design' %}">デザイン</a></li>
-                <li class="setting-li"><a class="active" href="{% url 'favolo:introduction' %}">タイトル/コメント</a></li>
-                <li class="setting-li"><a href="{% url 'favolo:tags' %}">タグ</a></li>
+                <li class="setting-li"><a href="{% url 'favolo:introduction' %}">タイトル/コメント</a></li>
+                <li class="setting-li"><a class="active" href="{% url 'favolo:tags' %}">タグ</a></li>
             </ul>
         </div>
         <div class="rightContent">
-            <h1>タイトル/コメントの変更</h1>
-            <form action="{% url 'favolo:introduction' %}" method="post">
+            <h1>タグの変更</h1>
+            <form action="{% url 'favolo:tags' %}" method="post">
                 {% csrf_token %}
                 <div class="field">
-                    {{ form.new_title|add_class:'form' }}
-                </div>
-                <div class="field">
-                    {{ form.new_comment|add_class:'form' }}
+                    {{ form.new_tags }} 
                 </div>
                 <input class="main-button" type="submit" value="更新する">
             </form>

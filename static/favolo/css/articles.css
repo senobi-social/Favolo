@@ -1,0 +1,267 @@
+/* ------------------------------------------------------- */
+/* 全体 */
+/* ------------------------------------------------------- */
+
+body {
+    background: #e3f1fc;     
+}
+
+
+h1 {
+    color: black;
+    font-size:40pt;
+    margin-top:20px;
+    margin-bottom:0px;
+    text-align:center;
+
+}
+
+a {
+    color:gray;
+    text-decoration: none;
+}
+
+.icon-red {
+  color: red;
+}
+
+.red {
+  color: red;
+}
+
+
+/* ------------------------------------------------------- */
+/* ヘッダー */
+/* ------------------------------------------------------- */
+header {
+  height: 65px;
+  width: 100%;
+  background-color: #ffffff;
+  position: fixed;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  width: 124px;
+  margin-top: 20px;
+}
+
+.header-left {
+  float: left;
+}
+
+.header-right {
+  float: right;
+  height: 65px;
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: all 0.5s;
+}
+
+.header-right:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+header h3 {
+  color: gray;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 20px;
+}
+
+/* プロフィール画像 */
+.header-right img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-top: 10px;
+  margin-right: 65px;
+}
+
+.header-right a {
+  line-height: 65px;
+  padding: 0 25px;
+  color: white;
+  display: block;
+}
+
+
+/* ------------------------------------------------------- */
+/* ハンバーガーメニュー */
+/* ------------------------------------------------------- */
+.global-nav {
+  position: fixed;
+  right: -320px; /* これで隠れる */
+  top: 0;
+  width: 300px; /* スマホに収まるくらい */
+  height: 100vh;
+  padding-top: 40px;
+  background-color: #fff;
+  transition: all .6s;
+  z-index: 200;
+  overflow-y: auto; /* メニューが多くなったらスクロールできるように */
+}
+.hamburger {
+  position: absolute;
+  right: 30px;
+  top: 10px;
+  width: 40px; /* クリックしやすいようにちゃんと幅を指定する */
+  height: 40px; /* クリックしやすいようにちゃんと高さを指定する */
+  cursor: pointer;
+  z-index: 300;
+}
+.global-nav__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.global-nav__item {
+  text-align: center;
+  padding: 0 14px;
+}
+.global-nav__item a {
+  display: block;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  text-decoration: none;
+  color: #111;
+}
+.global-nav__item a:hover {
+  background-color: #eee;
+}
+.hamburger__line {
+  position: absolute;
+  left: 11px;
+  width: 18px;
+  height: 1px;
+  background-color: #111;
+  transition: all .6s;
+}
+.hamburger__line--1 {
+  top: 14px;
+}
+.hamburger__line--2 {
+  top: 20px;
+}
+.hamburger__line--3 {
+  top: 26px;
+}
+.black-bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  background-color: #000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all .6s;
+  cursor: pointer;
+}
+/* 表示された時用のCSS */
+.nav-open .global-nav {
+  right: 0;
+}
+.nav-open .black-bg {
+  opacity: .8;
+  visibility: visible;
+}
+.nav-open .hamburger__line--1 {
+  transform: rotate(45deg);
+  top: 20px;
+}
+.nav-open .hamburger__line--2 {
+  width: 0;
+  left: 50%;
+}
+.nav-open .hamburger__line--3 {
+  transform: rotate(-45deg);
+  top: 20px;
+}
+
+/* ------------------------------------------------------- */
+/* カード部分  */
+/* ------------------------------------------------------- */
+/* カードの大枠 */
+.archive {
+    display: flex; /* 記事を横並びにする */
+    flex-wrap: wrap;
+    justify-content: space-around;
+    position: relative;
+    top: 120px;
+    width: 80%;
+    margin-bottom: 150px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.card{
+  width: 288px;
+  height: auto;
+  margin-bottom: 50px;
+}
+
+.card-skin{
+  overflow: hidden;
+  /* border-radius: 8px; */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card__imgframe{
+  width: 100%;
+  height: auto;
+  padding-top: 50%; /* デフォルト56.25% */
+  background: url(https://placehold.jp/640x360.png) no-repeat center;
+  background-size: cover;
+  box-sizing: border-box;
+}
+
+.card__textbox{
+  width: 100%;
+  height: auto;
+  padding: 20px 18px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.card__textbox > * + *{
+  margin-top: 10px;
+}
+
+.card__titletext{
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 125%;
+}
+
+.card__overviewtext{
+    font-size: 12px;
+    line-height: 150%;
+}
+
+/* プロフィール画像 */
+.card__profile {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+
+
+
+/* ------------------------------------------------------- */
+/* フッター  */
+/* ------------------------------------------------------- */
+
+footer {
+    display: block;
+    position: relative;
+    background-color: #ffffff;
+    width: 80%;
+    margin-top: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+    height: 200px;
+    border-radius: 10px;
+  }

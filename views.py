@@ -1039,12 +1039,20 @@ def get_other_fav_list(request, twitter, account):
     
     return res, false
 
-# settingsの設定ページ
+# 記事一覧ページ
 @login_required
 def all_pages(request):
 
+    # セッションからユーザー情報を取得
+    username = request.session.get('username')
+    account = request.session.get('account')
+    profile_image = request.session.get('page_profile_image')
+
     params = {
-        'title': '全てのFavolo一覧',
+        'title': 'Favolo',
+        'username': username,
+        'account': account,
+        'page_profile_image': profile_image,
     }
     return render(request, 'favolo/all.html', params)
 

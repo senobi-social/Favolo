@@ -5,14 +5,123 @@
     <head>
         <meta charset="utf-8">
         <title>{{ title }}</title>
-        <link rel="stylesheet" type="text/css" href="{% static 'favolo/css/index.css' %}" />
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="{% static 'favolo/css/articles.css' %}" />
     </head>
     <body>
-        <h1>Favolo一覧</h1>
-        <p><a href="{% url 'favolo:accesskey' '10trrD7156Gjdp5340' %}">ryutaのページ</a></p>
-        <p><a href="{% url 'favolo:accesskey' '10aefv8927buid2469' %}">soraのページ</a></p>
-        <p><a href="{% url 'favolo:accesskey' '10lOAy9729ryQC0586' %}">tamaeのページ</a></p>
-        <p><a href="{% url 'favolo:accesskey' '10oGQX4017aKeT4457' %}">misatoのページ</a></p>
+        <header>
+            <div class="header-left">
+                <div class="logo">
+                    <h3>{{ title }}</h3>
+                </div>
+            </div>
+            <div class="header-right">
+                <!-- プロフィール画像 -->
+                <a href="{% url 'favolo:result' %}"><img src="{{ page_profile_image }}" alt=""></a>
+                <nav class="global-nav">
+                    <ul class="global-nav__list">
+                      <li class="global-nav__item"><a href="{% url 'favolo:result' %}">{{ username }}</a></li>
+                      <li class="global-nav__item"><a href="">{{ account }}</a></li>
+                      <li class="global-nav__item"><a href="{% url 'favolo:settings' %}">設定</a></li>
+                      <li class="global-nav__item"><a href="{% url 'favolo:all' %}">記事一覧</a></li>
+                      <li class="global-nav__item"><a href="">利用規約</a></li>
+                      <li class="global-nav__item"><a href="">ドキュメント</a></li>
+                      <li class="global-nav__item"><a href="{% url 'favolo:logout' %}">ログアウト</a></li>
+                    </ul>
+                </nav>
+                    <div class="hamburger" id="js-hamburger">
+                        <span class="hamburger__line hamburger__line--1"></span>
+                        <span class="hamburger__line hamburger__line--2"></span>
+                        <span class="hamburger__line hamburger__line--3"></span>
+                    </div>
+                    <div class="black-bg" id="js-black-bg"></div>
+            </div>
+        </header>
+        <div class="archive">
+            <a href="{% url 'favolo:accesskey' '10aefv8927buid2469' %}">
+            <div class="card card-skin">
+                <div class="card__imgframe"></div>
+                <div class="card__textbox">
+                  <div class="card__titletext">
+                    ホテル好きのぼくが選ぶ京都のおすすめホテル
+                  </div>
+                  <div class="card__overviewtext">
+                    <img class="card__profile" src="{{ page_profile_image }}" alt="">
+                </div>
+                </div>
+            </div>
+            </a>
+            <a href="{% url 'favolo:accesskey' '10lOAy9729ryQC0586' %}">
+            <div class="card card-skin">
+                <div class="card__imgframe"></div>
+                <div class="card__textbox">
+                  <div class="card__titletext">
+                    Favoにタイトルをつけてみよう！
+                  </div>
+                  <div class="card__overviewtext">
+                    <img class="card__profile" src="{{ page_profile_image }}" alt="">
+                  </div>
+                </div>
+            </div>
+            </a>
+            <a href="{% url 'favolo:accesskey' '10oGQX4017aKeT4457' %}">
+            <div class="card card-skin">
+                <div class="card__imgframe"></div>
+                <div class="card__textbox">
+                  <div class="card__titletext">
+                    Favoにタイトルをつけてみよう！
+                  </div>
+                  <div class="card__overviewtext">
+                    <img class="card__profile" src="{{ page_profile_image }}" alt="">
+                </div>
+                </div>
+            </div>
+            </a>
+            <div class="card card-skin">
+                <div class="card__imgframe"></div>
+                <div class="card__textbox">
+                  <div class="card__titletext">
+                    タイトルがはいります。タイトルがはいります。
+                  </div>
+                  <div class="card__overviewtext">
+                    <img class="card__profile" src="{{ page_profile_image }}" alt="">
+                </div>
+                </div>
+            </div>
+            <div class="card card-skin">
+                <div class="card__imgframe"></div>
+                <div class="card__textbox">
+                  <div class="card__titletext">
+                    タイトルがはいります。タイトルがはいります。
+                  </div>
+                  <div class="card__overviewtext">
+                    <img class="card__profile" src="{{ page_profile_image }}" alt="">
+                </div>
+                </div>
+            </div>
+            <div class="card card-skin">
+                <div class="card__imgframe"></div>
+                <div class="card__textbox">
+                  <div class="card__titletext">
+                    タイトルがはいります。タイトルがはいります。
+                  </div>
+                  <div class="card__overviewtext">
+                    <img class="card__profile" src="{{ page_profile_image }}" alt="">
+                </div>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <p><a href="{% url 'favolo:accesskey' '10trrD7156Gjdp5340' %}">ryutaのページ</a></p>
+            <p><a href="{% url 'favolo:accesskey' '10aefv8927buid2469' %}">soraのページ</a></p>
+            <p><a href="{% url 'favolo:accesskey' '10lOAy9729ryQC0586' %}">tamaeのページ</a></p>
+            <p><a href="{% url 'favolo:accesskey' '10oGQX4017aKeT4457' %}">misatoのページ</a></p>
+        </footer>
+
+        <!-- Swiper END -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.5/js/swiper.min.js"></script>
+        <script type="text/javascript" src="{% static 'favolo/js/slide.js' %}"></script>
+        <!-- JQuery -->
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     </body>
 </html>

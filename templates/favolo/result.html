@@ -39,14 +39,36 @@
             </div>
         </header>
         <div class="introduction">
-            <h2>{{ page_title }}</h2>
-            <p class="comment">by {{ page_name }}</p>
-            <p class="comment">{{ page_comment }}</p>
-            <div class="tags-box">
-                {% if page_tag_name %}
-                <p class="tag"><i class="fas fa-tags"></i> {{ page_tag_name }}</p>
-                {% endif %} 
-            </div>    
+            <div class="introduction__textbox">
+                <h2>{{ page_title }}</h2>
+                <p class="comment">by {{ page_name }}</p>
+                <p class="comment">{{ page_comment }}</p>
+            </div>
+            <div class="introduction__sharebox">
+                <div class="introduction__tagsbox">
+                    {% if page_tag_name %}
+                    <p class="tag"><i class="fas fa-tags"></i> {{ page_tag_name }}</p>
+                    {% endif %} 
+                </div>
+                <div class="introduction__buttonbox">
+                    <!-- いいねボタン -->
+                    {% if page_liked_status is False %}
+                    <p><a href="{% url 'favolo:likes' page_accesskey %}"><i class="far fa-heart fa-lg"></i> {{ page_likes }}</a></p>
+                    {% else %}
+                    <p><a class="red" href="{% url 'favolo:likes' page_accesskey %}"><i class="fas fa-heart fa-lg icon-red"></i> {{ page_likes }}</a></p>
+                    {% endif %}
+                    <!-- フォローボタン -->
+                    {% if page_followed_status_code is 2 %}
+                    {% if page_followed_status is False %}
+                    <p><a href="{% url 'favolo:follows' page_accesskey %}"><i class="far fa-check-circle fa-lg"></i> </a></p>
+                    {% else %}
+                    <p><a href="{% url 'favolo:follows' page_accesskey %}"><i class="fas fa-check-circle fa-lg icon-blue"></i> </a></p>
+                    {% endif %}
+                    {% endif %}
+                    <!-- リンクコピーボタン -->
+                    <p><i class="fas fa-share icon-gray"></i></p>
+                </div>
+            </div>
         </div>
         <div class="archive">
             {% for text, image, id in list %}
@@ -81,22 +103,9 @@
             </div>
             {% endfor %}
         </div>
-        <footer>
-            <!-- いいねボタンを追記 -->
-            {% if page_liked_status is False %}
-            <p><a href="{% url 'favolo:likes' page_accesskey %}"><i class="far fa-heart fa-2x"></i> {{ page_likes }}</a></p>
-            {% else %}
-            <p><a class="red" href="{% url 'favolo:likes' page_accesskey %}"><i class="fas fa-heart fa-2x icon-red"></i> {{ page_likes }}</a></p>
-            {% endif %}
-            <!-- フォローボタンを追記 -->
-            {% if page_followed_status_code is 2 %}
-                {% if page_followed_status is False %}
-                <p><a href="{% url 'favolo:follows' page_accesskey %}">フォローする</a></p>
-                {% else %}
-                <p><a href="{% url 'favolo:follows' page_accesskey %}">フォローをやめる</a></p>
-                {% endif %}
-            {% endif %}
-        </footer>
+        <div class="footer">
+            テストでござる
+        </div>
 
         <!-- Swiper END -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.5/js/swiper.min.js"></script>

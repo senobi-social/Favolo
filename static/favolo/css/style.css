@@ -5,7 +5,8 @@
 /* ============================= */ 
 
 body {
-    background: #e3f1fc;     
+    background: #e3f1fc;
+    margin: 0;    
 }
 
 
@@ -23,9 +24,7 @@ a {
     text-decoration: none;
 }
 
-.icon-red {
-  color: red;
-}
+
 
 .red {
   color: red;
@@ -145,12 +144,23 @@ header h3 {
   top: 80px;
   background-color: #ffffff; /* #e3f1fc */
   width: 80%;
-  height: 200px;
+  height: auto;
+  max-height: 240px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 120px;
-  padding-top: 60px;
+  padding-top: 20px;
+  padding-left: 60px;
   border-radius: 10px;
+}
+
+/* タイトル・コメント */
+.introduction__textbox {
+  display: block;
+  position: relative;
+  width: 70%;
+  height: auto;
+  margin-bottom: 0;
+  background-color: #ffffff;
 }
 
 .comment {
@@ -158,13 +168,28 @@ header h3 {
   padding-left: 10px
 }
 
-.tags-box {
+/* タグボックスとボタンボックスの親要素 */
+.introduction__sharebox {
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+  width: 100%;
+  height: auto;
+  margin-top:0;
+  background-color: #ffffff;
+  border-radius: 10px;
+}
+
+/* タグボックス */
+.introduction__tagsbox {
   display: block;
   position: relative;
-  width: 95%;
+  width: 70%;
+  height: auto;
   text-align: left;
   background-color: #ffffff;
 }
+
 .tag {
   display: inline-block;
   color: gray;
@@ -178,20 +203,41 @@ header h3 {
   text-align: center;
 }
 
+/* ボタンボックス */
+.introduction__buttonbox {
+  display: flex;
+  flex-wrap: nowrap;
+  position: relative;
+  width: 30%;
+  height: auto;
+  background-color: #ffffff;
+}
+
+.introduction__buttonbox p {
+  margin: 10px;
+}
+
+.icon-red {
+  color: red;
+}
+
+.icon-blue {
+  color: #4dccff;
+}
+
+.icon-gray {
+  color: gray;
+}
+
+
 /* ------------------------------------------------------- */
 /* フッター  */
 /* ------------------------------------------------------- */
 
-footer {
+.footer {
   background-color: #ffffff;
-  width: 80%;
-  margin-top: 100px;
-  margin-bottom: 100px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 20px;
+  width: 100%;
   height: 200px;
-  border-radius: 10px;
 }
 
 /* ------------------------------------------------------- */

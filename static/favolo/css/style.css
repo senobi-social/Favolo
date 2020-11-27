@@ -148,6 +148,7 @@ header h3 {
   max-height: 240px;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 30px;
   padding-top: 20px;
   padding-left: 60px;
   border-radius: 10px;
@@ -235,9 +236,28 @@ header h3 {
 /* ------------------------------------------------------- */
 
 .footer {
-  background-color: #ffffff;
+  display: flex;
+  flex-wrap: nowrap;
+  background-color: #DEE9FC;
   width: 100%;
-  height: 200px;
+  height: 250px;
+  text-align: left;
+}
+
+.footer__box {
+  display: block;
+  width: 20%;
+  height: auto;
+  margin: 20px auto;
+  background-color: #DEE9FC;
+}
+
+.footer__title {
+  font-weight: 600; /* boldよりやや細い */
+}
+
+.footer p {
+ line-height: 20px; 
 }
 
 /* ------------------------------------------------------- */
@@ -250,7 +270,7 @@ header h3 {
   position: relative;
   top: 120px;
   width: 100%;
-  margin-bottom: 100px;
+  margin-bottom: 150px;
 }
 
 .article {

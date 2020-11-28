@@ -30,9 +30,10 @@ a {
   color: red;
 }
 
-
-/* ヘッダー */
 /* ------------------------------------------------------- */
+/* ヘッダー  */
+/* ------------------------------------------------------- */
+
 header {
   height: 65px;
   width: 100%;
@@ -42,17 +43,30 @@ header {
   z-index: 10;
 }
 
-.logo {
-  width: 124px;
-  margin-top: 20px;
-}
-
+/* ヘッダー左部分 */
 .header-left {
   float: left;
 }
 
+/* ロゴの大枠（β版にむけてのこしておく) */
+.header-left-logo {
+  width: 124px;
+  height: auto;
+  margin-top: 20px;
+  margin-left: 30px;
+  background-color: #ffffff;
+}
+
+/* ロゴ表示 */
+.header-left h3 {
+  color: gray;
+}
+
+/* ヘッダー右部分　*/
 .header-right {
   float: right;
+  display: flex;
+  flex-wrap: nowrap;
   height: 65px;
   background-color: rgba(255, 255, 255, 0.3);
   transition: all 0.5s;
@@ -62,77 +76,133 @@ header {
   background-color: rgba(255, 255, 255, 0.5);
 }
 
-header h3 {
-  color: gray;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 20px;
-}
-
 /* プロフィール画像 */
 .header-right img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   margin-top: 10px;
-  margin-right: 65px;
+  margin-right: 85px;
+  margin-left: 0;
 }
 
-.header-right a {
-  line-height: 65px;
-  padding: 0 25px;
-  color: white;
+/* アイコン背景 */
+.header-right-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-top: 10px;
+  margin-right: 10px;
+  margin-left: 10px;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* アイコン自体の設定 */
+.header-right i {
+  margin-top: 12px;
+  color: gray;
+}
+
+.header-right i:hover {
+  color: black;
+}
+
+
+/* ------------------------------------------------------- */
+/* ハンバーガメニュー  */
+/* ------------------------------------------------------- */
+
+.global-nav {
+  position: fixed;
+  right: -320px; /* これで隠れる */
+  top: 0;
+  width: 300px; /* スマホに収まるくらい */
+  height: 100vh;
+  padding-top: 40px;
+  background-color: #fff;
+  transition: all .6s;
+  z-index: 200;
+  overflow-y: auto; /* メニューが多くなったらスクロールできるように */
+}
+.hamburger {
+  position: absolute;
+  right: 30px;
+  top: 10px;
+  width: 40px; /* クリックしやすいようにちゃんと幅を指定する */
+  height: 40px; /* クリックしやすいようにちゃんと高さを指定する */
+  cursor: pointer;
+  z-index: 300;
+}
+.global-nav__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.global-nav__item {
+  text-align: center;
+  padding: 0 14px;
+  line-height: 60px;
+}
+.global-nav__item a {
   display: block;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  text-decoration: none;
+  color: #111;
 }
-
-.login-page {
-  width: 360px; /* 横幅 */
-  padding: 3% 0 0; /* 領域内のスペース　*/
-  margin: auto; /* 領域間のスペース　*/
+.global-nav__item a:hover {
+  background-color: #eee;
 }
-
-.form {
-  position: relative;
-  z-index: 1;
-  background: #FFFFFF;
-  max-width: 360px;
-  margin: 0 auto 100px;
-  padding: 45px;
-  text-align: left;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+.hamburger__line {
+  position: absolute;
+  left: 11px;
+  width: 18px;
+  height: 1px;
+  background-color: #111;
+  transition: all .6s;
 }
-
-/* テキストエリア　*/
-.form input {
-  font-family: "Franklin Gothic Medium";
-  outline: 0;
-  background: #f2f2f2;
-  width: 100%;
-  border: 0;
-  margin: 0 0 20px;
-  padding: 15px;
-  box-sizing: border-box;
-  font-size: 14px;
+.hamburger__line--1 {
+  top: 14px;
 }
-
-/* ログインボタン */
-.form button {
-  font-family: "Franklin Gothic Medium",;
-  text-transform: uppercase;
-  outline: 0;
-  background: #4CAF50;
-  width: 100%;
-  border: 0;
-  padding: 15px;
-  color: #FFFFFF;
-  font-size: 14px;
-  -webkit-transition: all 0.3 ease;
-  transition: all 0.3 ease;
+.hamburger__line--2 {
+  top: 20px;
+}
+.hamburger__line--3 {
+  top: 26px;
+}
+.black-bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  background-color: #000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all .6s;
   cursor: pointer;
 }
-
-.form button:hover,.form button:active,.form button:focus {
-  background: #43A047;
+/* 表示された時用のCSS */
+.nav-open .global-nav {
+  right: 0;
+}
+.nav-open .black-bg {
+  opacity: .8;
+  visibility: visible;
+}
+.nav-open .hamburger__line--1 {
+  transform: rotate(45deg);
+  top: 20px;
+}
+.nav-open .hamburger__line--2 {
+  width: 0;
+  left: 50%;
+}
+.nav-open .hamburger__line--3 {
+  transform: rotate(-45deg);
+  top: 20px;
 }
 
 /* ------------------------------------------------------- */
@@ -212,11 +282,43 @@ header h3 {
   width: 30%;
   height: auto;
   background-color: #ffffff;
+  box-sizing: border-box;
+  padding-left: 10px;
 }
 
 .introduction__buttonbox p {
-  margin: 10px;
+  margin-top: 12px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
+
+/* アイコン背景 */
+.introduction__icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  margin-top: 10px;
+  margin-right: 10px;
+  margin-left: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+  background-color: #e3f1fc;
+}
+
+/* アイコンのホバー */
+.introduction__buttonbox i:hover {
+  color: black;
+}
+
+/* いいね数の表示 */
+.favorite__number {
+  display: inline-block;
+  margin-top: 28px;
+  margin-right: 10px;
+  color: gray;
+  font-size: 12px;
+}
+
 
 .icon-red {
   color: red;
@@ -260,54 +362,69 @@ header h3 {
  line-height: 20px; 
 }
 
+.footer h3 {
+  color: gray;
+}
+
 /* ------------------------------------------------------- */
-/* テーブル配置 */
+/* コンテンツ */
 /* ------------------------------------------------------- */
+
+/* 記事の大枠 */
 .archive {
-  display: flex; /* 記事を横並びにする */
-  flex-wrap: wrap;
+  column-count: 3; /* マルチカラム */
   justify-content: space-around;
   position: relative;
-  top: 120px;
   width: 100%;
+  margin-top: 120px;
   margin-bottom: 150px;
 }
 
-.article {
-  margin-bottom: 3rem;
-  padding: 3rem;
-  width: 35%;
-  background-color: #ffffff;
-  border-radius: 10px; /* 角丸にする */
-  box-shadow: 2px 2px 3px rgb(187, 187, 187); 
-}
-
 .archive img {
-  display: block; /*ブロック要素にすることで余白などが設定できる */
-  float: left;
-  margin: 0 auto; /* これで画像と大枠間の余白が消える */
+  display: block; 
+  margin: 0 auto; /* スライド大枠との余白を消す */
   width: 100%;
   height: auto; /* ここが画像サイズを決める上で重要 */
 }
 
 .archive p {
-  /* floatを終了する */
-  clear: both;
   color: gray;
   margin: 10px;
 }
 
-/* スライドの大枠 */
+/* 記事 */
+.article {
+  break-inside:avoid; /* マルチカラム */
+  width: 90%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 20px 20px 6px -15px rgba(211, 222, 241, 0.6); 
+}
+
+.article-textbox {
+  width: 100%;
+  height: auto;
+  padding-top: 10px;
+  line-height: 25px;
+}
+
+
+
 /* ------------------------------------------------------- */
+/* スライドショー */
+/* ------------------------------------------------------- */
+
+/* スライドの大枠 */
 .hero {
   display: block;
   background-color: #ffffff;
   width: 100%;
 }
 
-/* 以下スライドショー */
-/* ------------------------------------------------------ */
-/* 全体のスタイル */
+/* スライド全体 */
 .swiper-wrapper {
 	width: 100%;
 	height: 400px; /* 画像の高さ調節（合わせる）*/
@@ -322,19 +439,19 @@ header h3 {
 }
 /* 4の倍数＋1枚目のスライドのスタイル（1枚目、5枚目…） */
 .swiper-slide:nth-child(4n+1) {
-	background-color: #EECB27;
+	background-color: #ffffff;
 }
 /* 4の倍数＋2枚目のスライドのスタイル（2枚目、6枚目…） */
 .swiper-slide:nth-child(4n+2) {
-	background-color: #E13239;
+	background-color: #ffffff;
 }
 /* 4の倍数＋3枚目のスライドのスタイル（3枚目、7枚目…） */
 .swiper-slide:nth-child(4n+3) {
-	background-color: #1F1762;
+	background-color: #ffffff;
 }
 /* 4の倍数＋4枚目のスライドのスタイル（4枚目、8枚目…） */
 .swiper-slide:nth-child(4n+4) {
-	background-color: #BEDAE5;
+	background-color: #ffffff;
 }
 
 @media screen and (max-width: 480px) {
@@ -344,94 +461,3 @@ header h3 {
 }
 }
 
-/* ハンバーガーメニュー */
-.global-nav {
-  position: fixed;
-  right: -320px; /* これで隠れる */
-  top: 0;
-  width: 300px; /* スマホに収まるくらい */
-  height: 100vh;
-  padding-top: 40px;
-  background-color: #fff;
-  transition: all .6s;
-  z-index: 200;
-  overflow-y: auto; /* メニューが多くなったらスクロールできるように */
-}
-.hamburger {
-  position: absolute;
-  right: 30px;
-  top: 10px;
-  width: 40px; /* クリックしやすいようにちゃんと幅を指定する */
-  height: 40px; /* クリックしやすいようにちゃんと高さを指定する */
-  cursor: pointer;
-  z-index: 300;
-}
-.global-nav__list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.global-nav__item {
-  text-align: center;
-  padding: 0 14px;
-}
-.global-nav__item a {
-  display: block;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
-  text-decoration: none;
-  color: #111;
-}
-.global-nav__item a:hover {
-  background-color: #eee;
-}
-.hamburger__line {
-  position: absolute;
-  left: 11px;
-  width: 18px;
-  height: 1px;
-  background-color: #111;
-  transition: all .6s;
-}
-.hamburger__line--1 {
-  top: 14px;
-}
-.hamburger__line--2 {
-  top: 20px;
-}
-.hamburger__line--3 {
-  top: 26px;
-}
-.black-bg {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 100;
-  background-color: #000;
-  opacity: 0;
-  visibility: hidden;
-  transition: all .6s;
-  cursor: pointer;
-}
-/* 表示された時用のCSS */
-.nav-open .global-nav {
-  right: 0;
-}
-.nav-open .black-bg {
-  opacity: .8;
-  visibility: visible;
-}
-.nav-open .hamburger__line--1 {
-  transform: rotate(45deg);
-  top: 20px;
-}
-.nav-open .hamburger__line--2 {
-  width: 0;
-  left: 50%;
-}
-.nav-open .hamburger__line--3 {
-  transform: rotate(-45deg);
-  top: 20px;
-}

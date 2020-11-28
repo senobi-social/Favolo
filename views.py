@@ -283,6 +283,8 @@ def result(request):
 
     sql_tagname_select = "SELECT name FROM favolo_tags_master where tag_id=UUID_TO_BIN(%s);"
 
+    sql_followcount_select = "SELECT follow, followed FROM favolo_follow_count where user_id=UUID_TO_BIN(%s);"
+
     # クエリの実行
     cursor.execute(sql_members_select, (email, ))
 
@@ -306,6 +308,12 @@ def result(request):
     # タグ情報の取得
     cursor.execute(sql_tags_select, (page_id, ))
     row_tags = cursor.fetchone()
+
+    # フォロー情報の取得
+    cursor.execute(sql_followcount_select, (user_id, ))
+    row_follow = cursor.fetchone()
+    login_user_follow = row_follow[0]
+    login_user_followed = row_follow[1]
 
     if row_tags == None:
         # タグが設定されていない場合の処理
@@ -343,7 +351,7 @@ def result(request):
 
     # 繰り返し部分はmainメソッドでする
     # それ以外の取得処理は他メソッドでする
-    for num in range(16):
+    for num in range(21):
         load = loads[num]
         # テキスト取得部分
         text = get_text(res, load, num)
@@ -396,6 +404,8 @@ def result(request):
         'page_tag_name': tag_name,
         'username': username,
         'account': account,
+        'follow': login_user_follow,
+        'followed': login_user_followed,
         'textList': textList,
         'imageList': imageList,
         'idList': idList,
@@ -428,7 +438,7 @@ def get_profile_image(request, twitter):
 def get_fav_list(request, twitter):
     url = 'https://api.twitter.com/1.1/favorites/list.json?tweet_mode=extended'
     name = request.session.get('account')
-    params = {'screen_name': name, 'count': 16}
+    params = {'screen_name': name, 'count': 21}
     res = twitter.get(url, params = params)
 
     if res.status_code == 200:
@@ -875,6 +885,7 @@ def pages(request, accesskey):
     username = request.session.get('username')
     account = request.session.get('account')
     profile_image = request.session.get('page_profile_image')
+    email = request.session.get('email')
 
     # データベースへの接続
     connection = MySQLdb.connect(
@@ -898,6 +909,10 @@ def pages(request, accesskey):
     sql_tags_select = "SELECT BIN_TO_UUID(tag_id) FROM favolo_tags_map where page_id=UUID_TO_BIN(%s);"
 
     sql_tagname_select = "SELECT name FROM favolo_tags_master where tag_id=UUID_TO_BIN(%s);"
+
+    sql_loginuser_select = "SELECT BIN_TO_UUID(user_id) FROM favolo_members where mail=%s;"
+
+    sql_followcount_select = "SELECT follow, followed FROM favolo_follow_count where user_id=UUID_TO_BIN(%s);"
 
     # クエリの実行
     cursor.execute(sql_pages_select, (accesskey,))
@@ -926,6 +941,16 @@ def pages(request, accesskey):
     # タグ情報の取得
     cursor.execute(sql_tags_select, (page_id, ))
     row_tags = cursor.fetchone()
+
+    # フォロー情報の取得
+    cursor.execute(sql_loginuser_select, (email,))
+    row_loginuser = cursor.fetchone()
+    login_user = row_loginuser[0]
+
+    cursor.execute(sql_followcount_select, (login_user, ))
+    row_follow = cursor.fetchone()
+    login_user_follow = row_follow[0]
+    login_user_followed = row_follow[1]
 
     if row_tags == None:
         # タグが設定されていない場合の処理
@@ -964,7 +989,7 @@ def pages(request, accesskey):
 
     # 繰り返し部分はmainメソッドでする
     # それ以外の取得処理は他メソッドでする
-    for num in range(16):
+    for num in range(21):
         load = loads[num]
         # テキスト取得部分
         text = get_text(res, load, num)
@@ -1006,6 +1031,8 @@ def pages(request, accesskey):
         'title': 'Favolo',
         'username': username,
         'account': account,
+        'follow': login_user_follow,
+        'followed': login_user_followed,
         'page_accesskey': accesskey,
         'page_name': name,
         'page_account': page_account,
@@ -1030,7 +1057,7 @@ def pages(request, accesskey):
 # 返り値：resとjson
 def get_other_fav_list(request, twitter, account):
     url = 'https://api.twitter.com/1.1/favorites/list.json?tweet_mode=extended'
-    params = {'screen_name': account, 'count': 16}
+    params = {'screen_name': account, 'count': 21}
     res = twitter.get(url, params = params)
 
     if res.status_code == 200:

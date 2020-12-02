@@ -121,4 +121,16 @@ class SettingsIntroductionForm(forms.Form):
         new_comment = self.cleaned_data.get('new_comment')
         return new_comment
 
+class SettingsTagsForm(forms.Form):
+    data = [
+        ('1', 'Trend'),
+        ('2', 'News'),
+        ('3', 'Food'),
+        ('4', 'Fashion'),
+        ('5', 'Interior'),
+        ('6', 'Room'),
+        ('7', 'Travel'),
+    ]
+    new_tags = forms.MultipleChoiceField(label='タグ', required=True, disabled=False, choices=data, widget=forms.SelectMultiple(attrs={'size': 8}))
+
 

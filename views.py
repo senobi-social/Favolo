@@ -351,7 +351,7 @@ def result(request):
 
     # 繰り返し部分はmainメソッドでする
     # それ以外の取得処理は他メソッドでする
-    for num in range(21):
+    for num in range(18):
         load = loads[num]
         # テキスト取得部分
         text = get_text(res, load, num)

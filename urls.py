@@ -23,6 +23,7 @@ urlpatterns = [
     path('settings/password', views.settings_password, name='password'),
     path('settings/design', views.settings_design, name='design'),
     path('settings/introduction', views.settings_introduction, name='introduction'),
+    path('settings/tags', views.settings_tags, name='tags'),
     path('settings', views.settings, name='settings'),
     path('all', views.all_pages, name='all'),
     path('<str:accesskey>', views.pages, name='accesskey'),
